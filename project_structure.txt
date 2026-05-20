@@ -1,0 +1,212 @@
+ELI-APP/ (Explain Like I'm 5 - AI Learning Platform)
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── AIController.php              # Main AI request handler
+│   │   │   ├── ConversationController.php    # Conversation management
+│   │   │   └── Controller.php                # Base controller
+│   │   │
+│   │   └── Middleware/
+│   │       └── VerifyCsrfToken.php           # CSRF validation (API routes excluded)
+│   │
+│   ├── Models/
+│   │   ├── User.php                          # User model & relationships
+│   │   ├── Conversation.php                  # Chat history model
+│   │   ├── Project.php                       # Project model
+│   │   └── Attachment.php                    # File attachment model
+│   │
+│   ├── Services/
+│   │   ├── GeminiService.php                 # Google Gemini API integration
+│   │   ├── DeepSeekService.php               # DeepSeek API integration
+│   │   └── AIServiceInterface.php            # AI service interface
+│   │
+│   ├── Providers/
+│   │   └── AppServiceProvider.php            # Service provider
+│   │
+│   └── Exceptions/
+│       └── Handler.php                       # Exception handler
+│
+├── bootstrap/
+│   ├── app.php                               # App configuration & middleware
+│   ├── providers.php                         # Provider boot
+│   └── cache/
+│       ├── packages.php
+│       └── services.php
+│
+├── config/
+│   ├── app.php                               # App configuration
+│   ├── auth.php                              # Authentication config
+│   ├── cache.php                             # Cache config
+│   ├── database.php                          # Database config
+│   ├── filesystems.php                       # File storage config
+│   ├── logging.php                           # Logging config
+│   ├── mail.php                              # Email config
+│   ├── queue.php                             # Queue config
+│   ├── session.php                           # Session config
+│   └── services.php                          # Third-party services config
+│
+├── database/
+│   ├── migrations/
+│   │   ├── 0001_01_01_000000_create_users_table.php
+│   │   ├── 0001_01_01_000001_create_cache_table.php
+│   │   ├── 0001_01_01_000002_create_jobs_table.php
+│   │   ├── 2026_05_20_041132_create_projects_table.php
+│   │   ├── 2026_05_20_041137_create_conversations_table.php
+│   │   ├── 2026_05_20_041141_create_attachments_table.php
+│   │   └── 2026_05_20_041145_add_tags_to_conversations_table.php
+│   │
+│   ├── factories/
+│   │   └── UserFactory.php                   # User factory for testing
+│   │
+│   └── seeders/
+│       └── DatabaseSeeder.php                # Database seeding
+│
+├── public/
+│   ├── index.php                             # Application entry point
+│   ├── robots.txt                            # SEO crawling rules
+│   └── hot                                   # Vite hot reload
+│
+├── resources/
+│   ├── views/
+│   │   ├── layouts/
+│   │   │   └── app.blade.php                 # Main layout template
+│   │   ├── index.blade.php                   # Dashboard view
+│   │   └── welcome.blade.php                 # Welcome page
+│   │
+│   ├── css/
+│   │   └── app.css                           # Global styles (Tailwind)
+│   │
+│   └── js/
+│       └── app.js                            # Main JavaScript
+│
+├── routes/
+│   ├── web.php                               # Web routes (HTML + API)
+│   ├── api.php                               # REST API routes
+│   └── console.php                           # Artisan commands
+│
+├── storage/
+│   ├── app/
+│   │   ├── private/                          # Private files
+│   │   └── public/                           # Public files
+│   │
+│   ├── framework/
+│   │   ├── cache/                            # App cache
+│   │   ├── sessions/                         # Session storage
+│   │   ├── testing/                          # Testing storage
+│   │   └── views/                            # Compiled views
+│   │
+│   └── logs/
+│       └── laravel.log                       # Application logs
+│
+├── tests/
+│   ├── Feature/
+│   │   ├── AIControllerTest.php              # AI controller tests
+│   │   ├── ConversationTest.php              # Conversation tests
+│   │   └── ExampleTest.php                   # Example test
+│   │
+│   ├── Unit/
+│   │   ├── GeminiServiceTest.php             # Gemini service tests
+│   │   └── ExampleTest.php                   # Example test
+│   │
+│   └── TestCase.php                          # Base test case
+│
+├── vendor/                                   # (Composer dependencies - not shown)
+├── .env                                      # Environment variables (local)
+├── .env.example                              # Environment template
+├── .gitignore                                # Git ignore rules
+├── artisan                                   # Artisan CLI
+├── composer.json                             # PHP dependencies
+├── composer.lock                             # PHP locked versions
+├── package.json                              # Node dependencies
+├── package-lock.json                         # Node locked versions
+├── phpunit.xml                               # PHPUnit config
+├── postcss.config.js                         # PostCSS config
+├── tailwind.config.js                        # Tailwind CSS config
+├── vite.config.js                            # Vite bundler config
+├── README.md                                 # Project documentation
+└── PROJECT_STRUCTURE.md                      # Detailed structure guide
+
+
+═══════════════════════════════════════════════════════════════════
+
+KEY FEATURES:
+
+AI Services:
+  ├── Google Gemini API (primary)
+  ├── DeepSeek API (fallback)
+  └── Mock AI mode (offline testing)
+
+Request Types:
+  ├── /ask              → General questions
+  ├── /summarize        → Summarize text
+  ├── /eli5             → Explain simply (like you're 5)
+  └── /code             → Code explanations
+
+Database Models:
+  ├── Users             → Application users
+  ├── Conversations     → Chat history
+  ├── Projects          → User projects
+  └── Attachments       → File uploads
+
+═══════════════════════════════════════════════════════════════════
+
+TECHNOLOGY STACK:
+
+Backend:         Laravel 13 (PHP 8.3+)
+Database:        MySQL
+Frontend:        Blade Templates + JavaScript
+Styling:         Tailwind CSS
+Bundler:         Vite
+Testing:         PHPUnit
+Session:         Database-based
+
+═══════════════════════════════════════════════════════════════════
+
+QUICK COMMANDS:
+
+Setup:
+  composer install                 # Install PHP dependencies
+  npm install                      # Install Node dependencies
+  cp .env.example .env             # Setup environment
+  php artisan key:generate         # Generate app key
+  php artisan migrate              # Run migrations
+  php artisan db:seed              # Seed database
+
+Development:
+  php artisan serve                # Start development server
+  npm run dev                       # Start Vite dev server
+  php artisan test                 # Run tests
+  php artisan tinker               # Interactive shell
+
+═══════════════════════════════════════════════════════════════════
+
+API ENDPOINTS:
+
+POST   /ask                 → Ask a question
+POST   /summarize           → Summarize text
+POST   /eli5                → Explain like I'm 5
+POST   /code                → Explain code
+POST   /explain-code        → Explain code (alias)
+GET    /history             → Get conversation history
+DELETE /history/{id}        → Delete conversation entry
+
+═══════════════════════════════════════════════════════════════════
+
+ENVIRONMENT VARIABLES (.env):
+
+APP_NAME=ELI
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_DATABASE=eli_db
+DB_USERNAME=root
+DB_PASSWORD=
+
+GEMINI_API_KEY=your_key_here
+DEEPSEEK_API_KEY=your_key_here
+USE_MOCK_AI=true
+
+═══════════════════════════════════════════════════════════════════
