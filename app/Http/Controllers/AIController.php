@@ -43,9 +43,14 @@ class AIController extends Controller
     {
         try {
             $request->validate(['question' => 'required|string']);
-            $answer = $this->gemini->ask($request->question);
-            $this->saveConversation('ask', $request->question, $answer);
-            return response()->json(['answer' => $answer], 200, [], JSON_UNESCAPED_SLASHES);
+            $question = $request->question;
+            $answer = $this->gemini->ask($question);
+            $this->saveConversation('ask', $question, $answer);
+            
+            // Format response with user's question included
+            $formattedAnswer = "📝 Question: " . $question . "\n\n🤖 Answer:\n" . $answer;
+            
+            return response()->json(['answer' => $formattedAnswer], 200, [], JSON_UNESCAPED_SLASHES);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['error' => 'Question is required'], 422);
         } catch (\Exception $e) {
@@ -58,10 +63,16 @@ class AIController extends Controller
     {
         try {
             $request->validate(['text' => 'required|string']);
-            $prompt = "Summarize the following text in 3-5 bullet points:\n\n" . $request->text;
+            $text = $request->text;
+            $prompt = "Summarize the following text in 3-5 bullet points:\n\n" . $text;
             $summary = $this->gemini->ask($prompt);
-            $this->saveConversation('summarize', $request->text, $summary);
-            return response()->json(['summary' => $summary], 200, [], JSON_UNESCAPED_SLASHES);
+            $this->saveConversation('summarize', $text, $summary);
+            
+            // Format response with original text preview
+            $textPreview = strlen($text) > 200 ? substr($text, 0, 200) . '...' : $text;
+            $formattedSummary = "📄 Original Text:\n" . $textPreview . "\n\n📝 Summary:\n" . $summary;
+            
+            return response()->json(['summary' => $formattedSummary], 200, [], JSON_UNESCAPED_SLASHES);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['error' => 'Text is required'], 422);
         } catch (\Exception $e) {
@@ -74,10 +85,15 @@ class AIController extends Controller
     {
         try {
             $request->validate(['text' => 'required|string']);
-            $prompt = "Explain the following concept like I'm 5 years old. Use simple words and fun examples:\n\n" . $request->text;
+            $text = $request->text;
+            $prompt = "Explain the following concept like I'm 5 years old. Use simple words and fun examples:\n\n" . $text;
             $explanation = $this->gemini->ask($prompt);
-            $this->saveConversation('eli5', $request->text, $explanation);
-            return response()->json(['explanation' => $explanation], 200, [], JSON_UNESCAPED_SLASHES);
+            $this->saveConversation('eli5', $text, $explanation);
+            
+            // Format response with user's question included
+            $formattedExplanation = "🧸 ELI5 Question: " . $text . "\n\n📖 Simplified Explanation:\n" . $explanation;
+            
+            return response()->json(['explanation' => $formattedExplanation], 200, [], JSON_UNESCAPED_SLASHES);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['error' => 'Text is required'], 422);
         } catch (\Exception $e) {
@@ -90,10 +106,15 @@ class AIController extends Controller
     {
         try {
             $request->validate(['code' => 'required|string']);
-            $prompt = "Explain the following code line by line. Tell me what each part does:\n\n" . $request->code;
+            $code = $request->code;
+            $prompt = "Explain the following code line by line. Tell me what each part does:\n\n" . $code;
             $explanation = $this->gemini->ask($prompt);
-            $this->saveConversation('code', $request->code, $explanation);
-            return response()->json(['explanation' => $explanation], 200, [], JSON_UNESCAPED_SLASHES);
+            $this->saveConversation('code', $code, $explanation);
+            
+            // Format response with original code included
+            $formattedExplanation = "💻 Code:\n" . $code . "\n\n🔍 Explanation:\n" . $explanation;
+            
+            return response()->json(['explanation' => $formattedExplanation], 200, [], JSON_UNESCAPED_SLASHES);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['error' => 'Code is required'], 422);
         } catch (\Exception $e) {
