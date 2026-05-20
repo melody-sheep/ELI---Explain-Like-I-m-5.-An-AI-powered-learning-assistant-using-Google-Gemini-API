@@ -1,1 +1,17 @@
 @import 'tailwindcss';
+
+/* Additional global styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+}
+
+/* Smooth theme transitions */
+.transition-all {
+    transition: all 0.3s ease;
+}
