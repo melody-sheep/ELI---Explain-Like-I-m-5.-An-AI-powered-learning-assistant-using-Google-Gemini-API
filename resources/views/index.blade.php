@@ -49,7 +49,6 @@
     .typing-dot:nth-child(2) { animation-delay: 0.2s; }
     .typing-dot:nth-child(3) { animation-delay: 0.4s; }
     
-    /* Button Press Effect */
     .btn-press {
         transition: all 0.1s ease;
         cursor: pointer;
@@ -59,7 +58,6 @@
         transform: scale(0.96);
     }
     
-    /* Hover Effects */
     .hover-scale {
         transition: all 0.2s ease;
     }
@@ -137,7 +135,6 @@
         color: white !important;
     }
     
-    /* Scrollbar */
     .sidebar-scroll::-webkit-scrollbar {
         width: 4px;
     }
@@ -164,7 +161,6 @@
         border-radius: 4px;
     }
     
-    /* Sidebar Collapse Transition */
     .sidebar-collapsed {
         width: 60px !important;
         min-width: 60px !important;
@@ -188,7 +184,6 @@
         padding: 16px 0;
     }
     
-    /* Code styling */
     pre {
         background-color: var(--bg-tertiary);
         padding: 12px;
@@ -204,7 +199,6 @@
         outline: none;
     }
     
-    /* Responsive for mobile */
     @media (max-width: 768px) {
         .sidebar-responsive {
             position: fixed;
@@ -241,6 +235,10 @@
     .mobile-menu-btn {
         display: none;
     }
+    
+    .toast-notification {
+        animation: slideIn 0.3s ease;
+    }
 </style>
 
 <!-- Mobile Overlay -->
@@ -252,7 +250,7 @@
     <!-- Full Sidebar Content -->
     <div class="sidebar-content" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
         
-        <!-- Logo Section - Compact -->
+        <!-- Logo Section -->
         <div style="padding: 16px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0;">
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -275,7 +273,7 @@
             </div>
         </div>
 
-        <!-- New Chat Button - Compact -->
+        <!-- New Chat Button -->
         <div style="padding: 12px 16px; flex-shrink: 0;">
             <button onclick="newConversation()" class="btn-press hover-scale" style="width: 100%; border: none; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: white; font-family: monospace; font-size: 12px; font-weight: 600; padding: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border-radius: 8px;">
                 <span class="material-symbols-outlined" style="font-size: 16px;">edit_note</span>
@@ -283,7 +281,7 @@
             </button>
         </div>
 
-        <!-- Stats Dashboard - Compact -->
+        <!-- Stats Dashboard -->
         <div style="padding: 0 16px 12px 16px; flex-shrink: 0;">
             <div style="background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%); border-radius: 10px; padding: 12px; border: 1px solid var(--border);">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
@@ -306,7 +304,7 @@
             </div>
         </div>
 
-        <!-- Quick Actions - Compact -->
+        <!-- Quick Actions -->
         <div style="padding: 4px 16px; flex-shrink: 0;">
             <div style="border-top: 1px solid var(--border); padding-top: 10px;">
                 <p style="font-size: 9px; font-weight: 600; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 8px;">QUICK ACTIONS</p>
@@ -327,7 +325,7 @@
             </div>
         </div>
 
-        <!-- Daily Quote - Compact -->
+        <!-- Daily Quote -->
         <div style="padding: 10px 16px; flex-shrink: 0;">
             <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(168, 85, 247, 0.1)); border-radius: 8px; padding: 8px 10px; border-left: 3px solid var(--accent);">
                 <p style="font-size: 9px; color: var(--accent); margin-bottom: 4px;">✨ DAILY INSPIRATION</p>
@@ -335,7 +333,7 @@
             </div>
         </div>
 
-        <!-- Recent Conversations - SCROLLABLE AREA -->
+        <!-- Recent Conversations - SCROLLABLE -->
         <div class="sidebar-scroll" style="flex: 1; overflow-y: auto; padding: 8px 16px 12px 16px; min-height: 0;">
             <div style="border-top: 1px solid var(--border); padding-top: 10px;">
                 <p style="font-size: 9px; font-weight: 600; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 8px;">RECENT CONVERSATIONS</p>
@@ -343,7 +341,26 @@
             </div>
         </div>
 
-        <!-- User Info - Compact at bottom -->
+        <!-- User Info - AUTHENTICATED VERSION -->
+        @auth
+        <div style="padding: 10px 16px; border-top: 1px solid var(--border); flex-shrink: 0;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); border-radius: 8px;">
+                    <span class="material-symbols-outlined" style="color: white; font-size: 18px;">account_circle</span>
+                </div>
+                <div style="flex: 1; min-width: 0;">
+                    <p style="font-size: 11px; font-weight: 600; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ Auth::user()->name }}</p>
+                    <p style="font-size: 8px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ Auth::user()->email }}</p>
+                </div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="btn-press" style="background: none; border: none; color: var(--accent-red); cursor: pointer; padding: 4px;">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">logout</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        @else
         <div style="padding: 10px 16px; border-top: 1px solid var(--border); flex-shrink: 0;">
             <div style="display: flex; align-items: center; gap: 10px;">
                 <div style="width: 32px; height: 32px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); border-radius: 8px;">
@@ -351,13 +368,14 @@
                 </div>
                 <div style="flex: 1;">
                     <p style="font-size: 11px; font-weight: 600; color: var(--text-primary);">Guest User</p>
-                    <p style="font-size: 8px; color: var(--text-muted);">AI Learning Assistant</p>
+                    <p style="font-size: 8px; color: var(--text-muted);">Not signed in</p>
                 </div>
-                <button onclick="clearAllHistory()" class="btn-press" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px;">
-                    <span class="material-symbols-outlined" style="font-size: 16px;">more_vert</span>
-                </button>
+                <a href="{{ route('login') }}" class="btn-press" style="background: none; border: 1px solid var(--accent); color: var(--accent); cursor: pointer; padding: 4px 8px; text-decoration: none; border-radius: 6px; font-size: 10px;">
+                    Login
+                </a>
             </div>
         </div>
+        @endauth
     </div>
     
     <!-- Icons Only View (When Collapsed) -->
@@ -396,7 +414,7 @@
     </div>
 </div>
 
-<!-- Mobile Menu Button (visible on small screens) -->
+<!-- Mobile Menu Button -->
 <button onclick="toggleSidebar()" class="mobile-menu-btn" style="position: fixed; bottom: 20px; left: 20px; width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); border: none; border-radius: 50%; color: white; cursor: pointer; z-index: 997; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: none; align-items: center; justify-content: center;">
     <span class="material-symbols-outlined" style="font-size: 24px;">menu</span>
 </button>
@@ -404,7 +422,7 @@
 <!-- Main Chat Area -->
 <div style="flex: 1; display: flex; flex-direction: column; background-color: var(--bg-primary); height: 100vh; overflow: hidden;">
 
-    <!-- Header - Compact -->
+    <!-- Header -->
     <div style="padding: 12px 24px; border-bottom: 1px solid var(--border); background-color: var(--bg-primary); flex-shrink: 0;">
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <div>
@@ -429,20 +447,20 @@
         </div>
     </div>
 
-    <!-- Messages Area - SCROLLABLE -->
+    <!-- Messages Area -->
     <div id="messages-area" style="flex: 1; overflow-y: auto; padding: 20px 24px; min-height: 0;">
         <!-- Welcome message will be injected here -->
     </div>
 
-    <!-- Smart Suggestions - Compact -->
+    <!-- Smart Suggestions -->
     <div id="suggestions-area" style="padding: 0 24px 8px 24px; flex-shrink: 0;">
         <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="suggestions-list"></div>
     </div>
 
-    <!-- Input Area - Compact at bottom -->
+    <!-- Input Area -->
     <div style="border-top: 1px solid var(--border); background-color: var(--bg-primary); flex-shrink: 0;">
         
-        <!-- Mode Buttons - Compact -->
+        <!-- Mode Buttons -->
         <div style="padding: 12px 24px 0 24px;">
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                 <button onclick="setMode('ask')" id="btn-ask" class="mode-btn active-mode" style="border: none; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: white; font-family: monospace; font-size: 11px; font-weight: 600; padding: 6px 14px; cursor: pointer; border-radius: 20px;">
@@ -460,7 +478,7 @@
             </div>
         </div>
 
-        <!-- Input Field with Voice - FIXED ALIGNMENT -->
+        <!-- Input Field with Voice -->
         <div style="padding: 12px 24px 16px 24px;">
             <div style="display: flex; gap: 10px; align-items: center;">
                 <div style="flex: 1; position: relative;">
@@ -485,7 +503,7 @@
 </div>
 
 <!-- Toast Container -->
-<div id="toast-container"></div>
+<div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
 
 <script>
     // ==================== CONFIGURATION ====================
@@ -515,19 +533,8 @@
                 mobileOverlay.style.display = 'none';
             }
         }
-        
-        // Adjust main content margin
-        const mainContent = document.querySelector('#main-content');
-        if (mainContent) {
-            if (isCollapsed) {
-                mainContent.style.marginLeft = '0';
-            } else {
-                mainContent.style.marginLeft = '0';
-            }
-        }
     }
     
-    // Load sidebar state
     function loadSidebarState() {
         const savedState = localStorage.getItem('sidebar_collapsed');
         const sidebar = document.getElementById('sidebar');
@@ -547,7 +554,6 @@
         }
     }
     
-    // Handle window resize
     window.addEventListener('resize', () => {
         const sidebar = document.getElementById('sidebar');
         const mobileOverlay = document.getElementById('mobile-overlay');
@@ -1080,7 +1086,6 @@
         setupAutoResize();
         setupVoiceRecognition();
         
-        // Check for Web Speech API support
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
             const micBtn = document.querySelector('[onclick="startVoiceInput()"]');
             if (micBtn) {

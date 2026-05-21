@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\GeminiService;
 use App\Models\Conversation;
-use App\Models\User;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 
 class AIController extends Controller
 {
@@ -15,26 +14,6 @@ class AIController extends Controller
     public function __construct(GeminiService $gemini)
     {
         $this->gemini = $gemini;
-        $this->ensureUserExists();
-    }
-
-    private function ensureUserExists()
-    {
-        $userId = Session::get('user_id');
-        
-        if (!$userId) {
-            $user = User::firstOrCreate(
-                ['id' => 1],
-                ['name' => 'Default User', 'email' => 'default@example.com', 'password' => bcrypt('password')]
-            );
-            Session::put('user_id', $user->id);
-        } elseif (!User::where('id', $userId)->exists()) {
-            $user = User::firstOrCreate(
-                ['id' => 1],
-                ['name' => 'Default User', 'email' => 'default@example.com', 'password' => bcrypt('password')]
-            );
-            Session::put('user_id', $user->id);
-        }
     }
 
     public function ask(Request $request)
@@ -42,16 +21,12 @@ class AIController extends Controller
         try {
             $request->validate(['question' => 'required|string']);
             $question = $request->question;
-            $sessionId = Session::getId(); // Get unique session ID
+            $sessionId = session()->getId();
             
-            // Get AI response with conversation memory
             $answer = $this->gemini->askWithMemory($question, $sessionId, 'ask');
             
-            $userId = Session::get('user_id', 1);
-            
-            // Save with session_id
             Conversation::create([
-                'user_id' => $userId,
+                'user_id' => Auth::id(),
                 'session_id' => $sessionId,
                 'mode' => 'ask',
                 'user_input' => $question,
@@ -72,14 +47,13 @@ class AIController extends Controller
         try {
             $request->validate(['text' => 'required|string']);
             $text = $request->text;
-            $sessionId = Session::getId();
+            $sessionId = session()->getId();
             
             $prompt = "Summarize the following text in 3-5 bullet points:\n\n" . $text;
             $summary = $this->gemini->askWithMemory($prompt, $sessionId, 'summarize');
             
-            $userId = Session::get('user_id', 1);
             Conversation::create([
-                'user_id' => $userId,
+                'user_id' => Auth::id(),
                 'session_id' => $sessionId,
                 'mode' => 'summarize',
                 'user_input' => $text,
@@ -101,14 +75,13 @@ class AIController extends Controller
         try {
             $request->validate(['text' => 'required|string']);
             $text = $request->text;
-            $sessionId = Session::getId();
+            $sessionId = session()->getId();
             
             $prompt = "Explain the following concept like I'm 5 years old. Use simple words and fun examples:\n\n" . $text;
             $explanation = $this->gemini->askWithMemory($prompt, $sessionId, 'eli5');
             
-            $userId = Session::get('user_id', 1);
             Conversation::create([
-                'user_id' => $userId,
+                'user_id' => Auth::id(),
                 'session_id' => $sessionId,
                 'mode' => 'eli5',
                 'user_input' => $text,
@@ -129,14 +102,13 @@ class AIController extends Controller
         try {
             $request->validate(['code' => 'required|string']);
             $code = $request->code;
-            $sessionId = Session::getId();
+            $sessionId = session()->getId();
             
             $prompt = "Explain the following code line by line. Tell me what each part does:\n\n" . $code;
             $explanation = $this->gemini->askWithMemory($prompt, $sessionId, 'code');
             
-            $userId = Session::get('user_id', 1);
             Conversation::create([
-                'user_id' => $userId,
+                'user_id' => Auth::id(),
                 'session_id' => $sessionId,
                 'mode' => 'code',
                 'user_input' => $code,
@@ -155,8 +127,7 @@ class AIController extends Controller
     public function history()
     {
         try {
-            $sessionId = Session::getId();
-            $conversations = Conversation::where('session_id', $sessionId)
+            $conversations = Conversation::where('user_id', Auth::id())
                 ->orderBy('created_at', 'desc')
                 ->get();
             return response()->json($conversations, 200, [], JSON_UNESCAPED_SLASHES);
@@ -169,11 +140,23 @@ class AIController extends Controller
     public function delete($id)
     {
         try {
-            $conversation = Conversation::findOrFail($id);
+            $conversation = Conversation::where('id', $id)
+                ->where('user_id', Auth::id())
+                ->firstOrFail();
             $conversation->delete();
             return response()->json(['success' => true], 200, [], JSON_UNESCAPED_SLASHES);
         } catch (\Exception $e) {
             \Log::error('Delete error: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+    }
+    
+    public function clearAll()
+    {
+        try {
+            Conversation::where('user_id', Auth::id())->delete();
+            return response()->json(['success' => true], 200, [], JSON_UNESCAPED_SLASHES);
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
