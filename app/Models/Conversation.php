@@ -9,10 +9,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Conversation extends Model
 {
     protected $fillable = [
-        'user_id', 'project_id', 'mode', 'user_input', 
-        'ai_response', 'tags', 'understood'
+        'user_id',
+        'session_id',  // ← ADD THIS LINE
+        'project_id',
+        'mode',
+        'user_input',
+        'ai_response',
+        'tags',
+        'understood',
     ];
-
     protected $casts = [
         'tags' => 'array',
         'understood' => 'boolean',

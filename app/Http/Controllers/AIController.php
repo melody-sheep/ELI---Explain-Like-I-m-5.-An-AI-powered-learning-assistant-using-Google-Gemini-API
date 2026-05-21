@@ -23,14 +23,12 @@ class AIController extends Controller
         $userId = Session::get('user_id');
         
         if (!$userId) {
-            // Use default user or create one
             $user = User::firstOrCreate(
                 ['id' => 1],
                 ['name' => 'Default User', 'email' => 'default@example.com', 'password' => bcrypt('password')]
             );
             Session::put('user_id', $user->id);
         } elseif (!User::where('id', $userId)->exists()) {
-            // If user_id in session doesn't exist, fallback to default
             $user = User::firstOrCreate(
                 ['id' => 1],
                 ['name' => 'Default User', 'email' => 'default@example.com', 'password' => bcrypt('password')]
@@ -44,15 +42,25 @@ class AIController extends Controller
         try {
             $request->validate(['question' => 'required|string']);
             $question = $request->question;
-            $answer = $this->gemini->ask($question);
-            $this->saveConversation('ask', $question, $answer);
+            $sessionId = Session::getId(); // Get unique session ID
             
-            // Format response with user's question included
+            // Get AI response with conversation memory
+            $answer = $this->gemini->askWithMemory($question, $sessionId, 'ask');
+            
+            $userId = Session::get('user_id', 1);
+            
+            // Save with session_id
+            Conversation::create([
+                'user_id' => $userId,
+                'session_id' => $sessionId,
+                'mode' => 'ask',
+                'user_input' => $question,
+                'ai_response' => $answer,
+            ]);
+            
             $formattedAnswer = "📝 Question: " . $question . "\n\n🤖 Answer:\n" . $answer;
             
             return response()->json(['answer' => $formattedAnswer], 200, [], JSON_UNESCAPED_SLASHES);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['error' => 'Question is required'], 422);
         } catch (\Exception $e) {
             \Log::error('Ask error: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 400);
@@ -64,17 +72,24 @@ class AIController extends Controller
         try {
             $request->validate(['text' => 'required|string']);
             $text = $request->text;
-            $prompt = "Summarize the following text in 3-5 bullet points:\n\n" . $text;
-            $summary = $this->gemini->ask($prompt);
-            $this->saveConversation('summarize', $text, $summary);
+            $sessionId = Session::getId();
             
-            // Format response with original text preview
+            $prompt = "Summarize the following text in 3-5 bullet points:\n\n" . $text;
+            $summary = $this->gemini->askWithMemory($prompt, $sessionId, 'summarize');
+            
+            $userId = Session::get('user_id', 1);
+            Conversation::create([
+                'user_id' => $userId,
+                'session_id' => $sessionId,
+                'mode' => 'summarize',
+                'user_input' => $text,
+                'ai_response' => $summary,
+            ]);
+            
             $textPreview = strlen($text) > 200 ? substr($text, 0, 200) . '...' : $text;
             $formattedSummary = "📄 Original Text:\n" . $textPreview . "\n\n📝 Summary:\n" . $summary;
             
             return response()->json(['summary' => $formattedSummary], 200, [], JSON_UNESCAPED_SLASHES);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['error' => 'Text is required'], 422);
         } catch (\Exception $e) {
             \Log::error('Summarize error: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 400);
@@ -86,16 +101,23 @@ class AIController extends Controller
         try {
             $request->validate(['text' => 'required|string']);
             $text = $request->text;
-            $prompt = "Explain the following concept like I'm 5 years old. Use simple words and fun examples:\n\n" . $text;
-            $explanation = $this->gemini->ask($prompt);
-            $this->saveConversation('eli5', $text, $explanation);
+            $sessionId = Session::getId();
             
-            // Format response with user's question included
+            $prompt = "Explain the following concept like I'm 5 years old. Use simple words and fun examples:\n\n" . $text;
+            $explanation = $this->gemini->askWithMemory($prompt, $sessionId, 'eli5');
+            
+            $userId = Session::get('user_id', 1);
+            Conversation::create([
+                'user_id' => $userId,
+                'session_id' => $sessionId,
+                'mode' => 'eli5',
+                'user_input' => $text,
+                'ai_response' => $explanation,
+            ]);
+            
             $formattedExplanation = "🧸 ELI5 Question: " . $text . "\n\n📖 Simplified Explanation:\n" . $explanation;
             
             return response()->json(['explanation' => $formattedExplanation], 200, [], JSON_UNESCAPED_SLASHES);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['error' => 'Text is required'], 422);
         } catch (\Exception $e) {
             \Log::error('ELI5 error: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 400);
@@ -107,38 +129,36 @@ class AIController extends Controller
         try {
             $request->validate(['code' => 'required|string']);
             $code = $request->code;
-            $prompt = "Explain the following code line by line. Tell me what each part does:\n\n" . $code;
-            $explanation = $this->gemini->ask($prompt);
-            $this->saveConversation('code', $code, $explanation);
+            $sessionId = Session::getId();
             
-            // Format response with original code included
+            $prompt = "Explain the following code line by line. Tell me what each part does:\n\n" . $code;
+            $explanation = $this->gemini->askWithMemory($prompt, $sessionId, 'code');
+            
+            $userId = Session::get('user_id', 1);
+            Conversation::create([
+                'user_id' => $userId,
+                'session_id' => $sessionId,
+                'mode' => 'code',
+                'user_input' => $code,
+                'ai_response' => $explanation,
+            ]);
+            
             $formattedExplanation = "💻 Code:\n" . $code . "\n\n🔍 Explanation:\n" . $explanation;
             
             return response()->json(['explanation' => $formattedExplanation], 200, [], JSON_UNESCAPED_SLASHES);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['error' => 'Code is required'], 422);
         } catch (\Exception $e) {
             \Log::error('Explain code error: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 
-    private function saveConversation($mode, $input, $response)
-    {
-        $userId = Session::get('user_id', 1);
-        Conversation::create([
-            'user_id' => $userId,
-            'mode' => $mode,
-            'user_input' => $input,
-            'ai_response' => $response,
-        ]);
-    }
-
     public function history()
     {
         try {
-            $userId = Session::get('user_id', 1);
-            $conversations = Conversation::where('user_id', $userId)->orderBy('created_at', 'desc')->get();
+            $sessionId = Session::getId();
+            $conversations = Conversation::where('session_id', $sessionId)
+                ->orderBy('created_at', 'desc')
+                ->get();
             return response()->json($conversations, 200, [], JSON_UNESCAPED_SLASHES);
         } catch (\Exception $e) {
             \Log::error('History error: ' . $e->getMessage());

@@ -1,6 +1,114 @@
-vendor/ 
-node_modules/ 
-.env 
-storage/ 
-.idea/ 
-.vscode/ 
+# Dependencies
+vendor/
+node_modules/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Laravel storage & cache
+storage/
+storage/*.key
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*.log
+public/storage
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-*
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log
+yarn-error.log
+composer.lock
+package-lock.json
+yarn.lock
+
+# Testing
+coverage/
+.phpunit.result.cache
+.phpunit.cache
+/.phpunit.cache
+phpunit.xml
+
+# Laravel specific
+Homestead.json
+Homestead.yaml
+.env.backup
+.env.production
+.phpunit.result.cache
+/.fleet
+/public/hot
+/public/hot-manifest.json
+/public/build
+/storage/debugbar
+
+# Compiled assets
+/public/css/*.css
+/public/js/*.js
+!public/css/app.css
+!public/js/app.js
+
+# Temporary uploads (but keep the folders)
+/storage/app/public/lesson-files/*
+/storage/app/public/flashcard-sources/*
+/storage/app/public/quiz-sources/*
+!.gitkeep
+
+# Session files
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+
+# Cache files
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+
+# View cache
+storage/framework/views/*
+!storage/framework/views/.gitignore
+
+# SSL certificates
+*.crt
+*.key
+*.pem
+*.cert
+
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Composer
+composer.phar
+.phpsa/coveralls
+.phpcs/
+.php-cs-fixer.cache
+
+# NPM
+npm-debug.log
+yarn-error.log
+.pnpm-debug.log
+
+# Laravel Sail
+docker-compose.override.yml
+
+# Project specific temp files
+*.tmp
+*.temp
+*.cache
+
+# Backup files
+*.backup
+*.old
+*.orig
