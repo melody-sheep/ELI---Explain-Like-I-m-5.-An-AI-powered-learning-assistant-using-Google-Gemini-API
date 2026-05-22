@@ -1,7 +1,12 @@
+```markdown
 📁 ELI-APP Project Structure
-Updated: May 22, 2026
+Updated: May 22, 2026 (Late Evening)
+Status: FLASHCARDS MODULE ✅ 100% COMPLETE | Next: Auth Fixes → Lessons UI → Practice Quiz
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 🏗️ COMPLETE FILE TREE
-text
+
 ELI-APP/
 ├─ ✅ app/ # Main Laravel app
 │  ├─ ✅ Http/
@@ -129,7 +134,8 @@ ELI-APP/
 │  ├─ ✅ console.php
 │  └─ ✅ web.php
 │
-├─ ✅ storage/ # (not included in tree)
+├─ ✅ storage/
+│  └─ ✅ (runtime files)
 │
 ├─ ✅ tests/
 │  ├─ ✅ TestCase.php
@@ -153,134 +159,134 @@ ELI-APP/
 ├─ ✅ tailwind.config.js
 ├─ ✅ TODO.md
 └─ ✅ vite.config.js
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ✅ WHAT HAS BEEN ACCOMPLISHED (UPDATED)
-Category	Achievement	Status
-Core App	Laravel + MySQL	✅ Complete
-AI Integration	Google Gemini API	✅ Complete
-4 AI Modes	ASK, SUMMARIZE, ELI5, CODE	✅ Complete
-Lessons UI	Good UI design	✅ Complete
-Flashcards UI	Good UI design	✅ Complete
-Quizzes UI	Good UI design	✅ Complete
-Dark/Light Theme	Working	✅ Complete
-Voice Input	Speech recognition	✅ Complete
-GitHub Backup	Code stored	✅ Complete
-Authentication	Login/Register/Guest Mode	✅ COMPLETE
-User Isolation	Each user sees own data	✅ COMPLETE
-Guest Mode	Browse without account	✅ COMPLETE
-Auth UI/UX	Redesigned with animations	✅ COMPLETE
+
+| Category | Achievement | Status |
+|----------|-------------|--------|
+| Core App | Laravel + MySQL | ✅ Complete |
+| AI Integration | Google Gemini API | ✅ Complete |
+| 4 AI Modes | ASK, SUMMARIZE, ELI5, CODE | ✅ Complete |
+| Lessons UI | Good UI design | ✅ Complete |
+| Flashcards UI | Complete redesign with Consolas font & Material Icons | ✅ COMPLETE |
+| Quizzes UI | Good UI design | ✅ Complete |
+| Dark/Light Theme | Working on all pages including flashcards | ✅ COMPLETE |
+| Voice Input | Speech recognition | ✅ Complete |
+| GitHub Backup | Code stored | ✅ Complete |
+| Authentication | Login/Register/Guest Mode | ✅ COMPLETE |
+| User Isolation | Each user sees own data | ✅ COMPLETE |
+| Guest Mode | Browse without account | ✅ COMPLETE |
+| Auth UI/UX | Redesigned with animations | ✅ COMPLETE |
+| Flashcard Generation | AI-powered from PDF/DOCX/TXT | ✅ COMPLETE |
+| Flashcard Mastery | Easy/Medium/Hard ratings saved to DB | ✅ COMPLETE |
+| Completion Modal | Statistics modal with accuracy & time | ✅ COMPLETE |
+| Theme Toggle | Added to all flashcard pages | ✅ COMPLETE |
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 🔴 CRITICAL ISSUES NEEDING MAJOR REVISION
+
 1. Authentication System - ✅ COMPLETED
-Task	Description	Priority	Status
-Login Page	User authentication	🔴 HIGH	✅ COMPLETE
-Register Page	New user signup	🔴 HIGH	✅ COMPLETE
-Guest Mode	Browse without account	🔴 HIGH	✅ COMPLETE
-User Table	Connect to MySQL database	🔴 HIGH	✅ COMPLETE
-Password Reset	Forgot password feature	🟡 MEDIUM	✅ COMPLETE
-Session Management	User-specific data	🔴 HIGH	✅ COMPLETE
-User Profile	Update user info	🟡 MEDIUM	⚠️ NEXT
-User Preferences	Settings management	🟢 LOW	⚠️ NEXT
+
+| Task | Description | Priority | Status |
+|------|-------------|----------|--------|
+| Login Page | User authentication | 🔴 HIGH | ✅ COMPLETE |
+| Register Page | New user signup | 🔴 HIGH | ✅ COMPLETE |
+| Guest Mode | Browse without account | 🔴 HIGH | ✅ COMPLETE |
+| User Table | Connect to MySQL database | 🔴 HIGH | ✅ COMPLETE |
+| Password Reset | Forgot password feature | 🟡 MEDIUM | ✅ COMPLETE |
+| Session Management | User-specific data | 🔴 HIGH | ✅ COMPLETE |
+| User Profile | Update user info | 🟡 MEDIUM | ⚠️ NEXT |
+| User Preferences | Settings management | 🟢 LOW | ⚠️ NEXT |
+
 2. Practice Quiz - NEXT TASK ❌
-Current Issue	What Should Happen
-Uses pre-defined "Intro to AI" sample	Generate questions from UPLOADED document
-Not dynamic	FULLY DYNAMIC based on user's content
-Backup script runs as primary	Backup ONLY when API fails
-Expected Behavior:
 
-User uploads a document (PDF, DOC, TXT)
+| Current Issue | What Should Happen |
+|---------------|---------------------|
+| Uses pre-defined "Intro to AI" sample | Generate questions from UPLOADED document |
+| Not dynamic | FULLY DYNAMIC based on user's content |
+| Backup script runs as primary | Backup ONLY when API fails |
 
-AI analyzes the document content
+**Expected Behavior:**
+- User uploads a document (PDF, DOC, TXT)
+- AI analyzes the document content
+- AI generates custom quiz questions based on THAT document
+- User takes quiz with timer
+- IF API fails → Fallback to pre-defined scripts
 
-AI generates custom quiz questions based on THAT document
+**User Controls Needed:**
 
-User takes quiz with timer
+| Control | Endpoint |
+|---------|----------|
+| Number of questions (5, 10, 15, 20) | PATCH /quiz/{id}/settings |
+| Difficulty level (Easy, Medium, Hard) | PATCH /quiz/{id}/difficulty |
+| Question type (Multiple Choice, True/False, Fill in blank) | PATCH /quiz/{id}/type |
+| Timer on/off | PATCH /quiz/{id}/timer |
+| Time limit setting (1min, 2min, 5min, 10min) | PATCH /quiz/{id}/timelimit |
+| Retake option | PATCH /quiz/{id}/retake |
+| Save results to database | POST /quiz/{id}/results |
 
-IF API fails → Fallback to pre-defined scripts
+3. Flashcards - ✅ COMPLETED
 
-User Controls Needed:
+| Current Issue | What Should Happen | Status |
+|---------------|---------------------|--------|
+| Shows sample Laravel questions | Generate flashcards from UPLOADED document | ✅ FIXED |
+| Not dynamic | FULLY DYNAMIC based on user's content | ✅ FIXED |
+| Basic flip only | Advanced study modes with mastery tracking | ✅ FIXED |
 
-Number of questions (5, 10, 15, 20) → PATCH /quiz/{id}/settings
-
-Difficulty level (Easy, Medium, Hard) → PATCH /quiz/{id}/difficulty
-
-Question type (Multiple Choice, True/False, Fill in blank) → PATCH /quiz/{id}/type
-
-Timer on/off → PATCH /quiz/{id}/timer
-
-Time limit setting (1min, 2min, 5min, 10min) → PATCH /quiz/{id}/timelimit
-
-Retake option → PATCH /quiz/{id}/retake
-
-Save results to database → POST /quiz/{id}/results
-
-3. Flashcards - NEXT TASK ❌
-Current Issue	What Should Happen
-Shows sample Laravel questions	Generate flashcards from UPLOADED document
-Not dynamic	FULLY DYNAMIC based on user's content
-Basic flip only	Advanced study modes
-Expected Behavior:
-
-User uploads a document
-
-AI extracts key concepts
-
-AI generates custom flashcards (Q&A pairs)
-
-User studies with spaced repetition
-
-IF API fails → Fallback to pre-defined scripts
-
-User Controls Needed:
-
-Number of flashcards (5, 10, 20, 30) → PATCH /flashcards/{id}/settings
-
-Study mode (Normal, Spaced Repetition, Quiz Mode) → PATCH /flashcards/{id}/mode
-
-Auto-flip timer (2sec, 3sec, 5sec, Off) → PATCH /flashcards/{id}/autoflip
-
-Shuffle cards on/off → PATCH /flashcards/{id}/shuffle
-
-Difficulty rating (Easy, Medium, Hard) → PATCH /flashcards/{id}/difficulty
-
-Review only difficult cards → GET /flashcards/difficult
-
-Progress tracking per deck → GET /flashcards/{id}/progress
-
-Save mastery level to database → PATCH /flashcards/{id}/mastery
+**Working Features:**
+- ✅ User uploads document → AI extracts key concepts
+- ✅ AI generates custom flashcards (Q&A pairs)
+- ✅ User studies with spaced repetition
+- ✅ IF API fails → Fallback to content-based extraction
+- ✅ Mastery tracking (Easy/Medium/Hard saved to database)
+- ✅ Completion modal with statistics
+- ✅ Theme toggle on all flashcard pages
 
 4. Review Lessons - UX REVISION NEEDED ⚠️
-Current Issue	What Should Happen	HTTP Method
-Works but needs improvement	Add user customization	-
-Progress saves locally	Sync to database with auth	POST/PATCH
-User Controls Needed:
 
-Mark lesson as complete → PATCH /lessons/{id}/complete
+| Current Issue | What Should Happen | HTTP Method |
+|---------------|---------------------|-------------|
+| Works but needs improvement | Add user customization | - |
+| Progress saves locally | Sync to database with auth | POST/PATCH |
 
-Add personal notes → POST /lessons/{id}/notes, PUT /lessons/{id}/notes
+**User Controls Needed:**
 
-Bookmark important lessons → PATCH /lessons/{id}/bookmark
+| Control | Endpoint |
+|---------|----------|
+| Mark lesson as complete | PATCH /lessons/{id}/complete |
+| Add personal notes | POST /lessons/{id}/notes, PUT /lessons/{id}/notes |
+| Bookmark important lessons | PATCH /lessons/{id}/bookmark |
+| Set reading reminders | POST /lessons/{id}/reminder |
+| Download lesson as PDF | GET /lessons/{id}/download |
+| Share lesson link | GET /lessons/{id}/share |
+| Rate lesson (1-5 stars) | PATCH /lessons/{id}/rating |
+| Add tags/categories | PATCH /lessons/{id}/tags |
+| Filter by tags | GET /lessons?tag={tag} |
+| Sort by date, title, progress | GET /lessons?sort={field} |
 
-Set reading reminders → POST /lessons/{id}/reminder
-
-Download lesson as PDF → GET /lessons/{id}/download
-
-Share lesson link → GET /lessons/{id}/share
-
-Rate lesson (1-5 stars) → PATCH /lessons/{id}/rating
-
-Add tags/categories → PATCH /lessons/{id}/tags
-
-Filter by tags → GET /lessons?tag={tag}
-
-Sort by date, title, progress → GET /lessons?sort={field}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📋 NEW TABLES NEEDED FOR DATABASE
+
 Already Created ✅
-sql
+```sql
 -- Users table - ✅ EXISTS (with is_guest column)
 -- password_reset_tokens - ✅ EXISTS
 -- sessions - ✅ EXISTS
+-- flashcards - ✅ EXISTS
+-- flashcard_mastery - ✅ EXISTS
+-- lessons - ✅ EXISTS
+-- lesson_contents - ✅ EXISTS
+-- quizzes - ✅ EXISTS
+-- quiz_questions - ✅ EXISTS
+-- conversations - ✅ EXISTS
+```
+
 Need to Create ❌
-sql
+```sql
 -- User progress (tracking)
 CREATE TABLE user_progress (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -310,19 +316,6 @@ CREATE TABLE quiz_attempts (
     FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
 );
 
--- User flashcard mastery
-CREATE TABLE flashcard_mastery (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL,
-    flashcard_id BIGINT NOT NULL,
-    difficulty VARCHAR(50),
-    review_count INT DEFAULT 0,
-    next_review_date DATE,
-    mastered BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (flashcard_id) REFERENCES flashcards(id)
-);
-
 -- User settings/preferences
 CREATE TABLE user_settings (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -348,170 +341,259 @@ CREATE TABLE lesson_notes (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (lesson_id) REFERENCES lessons(id)
 );
+```
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 📋 What Still NEEDS to be ACCOMPLISHED ❌
+
 🔴 HIGH PRIORITY (Next Tasks)
-Order	Task	Description	Status	Time	HTTP Methods
-1	Fix Practice Quiz	Make FULLY DYNAMIC from uploaded docs	❌ 0%	4 hours	POST, PATCH
-2	Fix Flashcards	Make FULLY DYNAMIC from uploaded docs	❌ 0%	3 hours	POST, PATCH
-3	Quiz User Controls	Add settings (questions, difficulty, timer)	❌ 0%	2 hours	PATCH
-4	Flashcard User Controls	Add study modes, auto-flip, shuffle	❌ 0%	2 hours	PATCH
-5	RESTful PUT Methods	Implement full update endpoints	❌ 0%	1 hour	PUT
-6	RESTful PATCH Methods	Implement partial update endpoints	❌ 0%	2 hours	PATCH
+
+| Order | Task | Description | Status | Time | HTTP Methods |
+|-------|------|-------------|--------|------|--------------|
+| 1 | Auth Minor Fixes | Fix session persistence, guest mode edge cases | ❌ 0% | 1 hour | - |
+| 2 | AI Conversation Memory | Test and fix context memory in main chat | ❌ 0% | 1 hour | - |
+| 3 | Fix Practice Quiz | Make FULLY DYNAMIC from uploaded docs | ❌ 0% | 4 hours | POST, PATCH |
+| 4 | Quiz UI/UX | Add theme toggle, completion modal, material icons | ❌ 0% | 2 hours | PATCH |
+| 5 | Lessons UI/UX | Add database sync for progress, notes, bookmarks | ❌ 0% | 3 hours | PATCH, GET |
+| 6 | RESTful PUT/PATCH | Implement full update endpoints | ❌ 0% | 2 hours | PUT, PATCH |
+
 🟡 MEDIUM PRIORITY
-Task	Description	Status	Time	HTTP Methods
-Lesson UX	Add rating, tags, sorting	❌ 0%	2 hours	PATCH, GET
-User Progress Tables	Create migration for tracking	❌ 0%	1 hour	-
-Quiz Attempts History	Save scores to database	❌ 0%	1 hour	POST, GET
-User Settings Table	Store user preferences	❌ 0%	30 min	-
-Lesson Notes Feature	Save personal notes	❌ 0%	1 hour	POST, PUT, DELETE
-User Profile Page	Edit profile, change password	❌ 0%	2 hours	PUT, PATCH
-APK Generation	Convert to Android	❌ 0%	2 hours	-
-Screenshots	For documentation	❌ 0%	30 min	-
-Gantt Chart	Project timeline	❌ 0%	1 hour	-
+
+| Task | Description | Status | Time | HTTP Methods |
+|------|-------------|--------|------|--------------|
+| User Progress Tables | Create migration for tracking | ❌ 0% | 1 hour | - |
+| Quiz Attempts History | Save scores to database | ❌ 0% | 1 hour | POST, GET |
+| User Settings Table | Store user preferences | ❌ 0% | 30 min | - |
+| Lesson Notes Feature | Save personal notes to database | ❌ 0% | 1 hour | POST, PUT, DELETE |
+| User Profile Page | Edit profile, change password | ❌ 0% | 2 hours | PUT, PATCH |
+| APK Generation | Convert to Android | ❌ 0% | 2 hours | - |
+| Screenshots | For documentation | ❌ 0% | 30 min | - |
+| Gantt Chart | Project timeline | ❌ 0% | 1 hour | - |
+
 🟢 LOW PRIORITY
-Task	Description	Status	Time
-APA References	5+ scholarly sources	❌ 0%	2 hours
-Contribution Matrix	Team roles	❌ 0%	30 min
-Social Sharing	Share quiz scores	❌ 0%	2 hours
-Email Notifications	Password reset, reminders	❌ 0%	2 hours
+
+| Task | Description | Status | Time |
+|------|-------------|--------|------|
+| APA References | 5+ scholarly sources | ❌ 0% | 2 hours |
+| Contribution Matrix | Team roles | ❌ 0% | 30 min |
+| Social Sharing | Share quiz scores | ❌ 0% | 2 hours |
+| Email Notifications | Password reset, reminders | ❌ 0% | 2 hours |
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 📈 Progress Summary (UPDATED)
-text
-Overall Progress: ████████████████░░░░ 75%
+
+```
+Overall Progress: ████████████████████░░ 85%
 
 ✅ Technical Core:        ████████████████████ 100%
 ✅ UI Design:             ████████████████████ 100%
-✅ Authentication:        ████████████████████ 100%  ⬆️ UPGRADED
-⚠️ RESTful PUT/PATCH:     ░░░░░░░░░░░░░░░░░░░░   0%
-⚠️ Quiz Dynamic:          ░░░░░░░░░░░░░░░░░░░░   0%
-⚠️ Flashcards Dynamic:    ░░░░░░░░░░░░░░░░░░░░   0%
-⚠️ User Controls:         ░░░░░░░░░░░░░░░░░░░░   0%
-📝 Documentation:         ████████░░░░░░░░░░░░  40%
-📊 Presentation:          ████████░░░░░░░░░░░░  40%
-📱 APK/Deployment:        ████░░░░░░░░░░░░░░░░  20%
+✅ Authentication:        ████████████████████ 100%
+✅ Flashcards Module:     ████████████████████ 100% ⬆️ NEW
+⚠️ Lessons Module:        ████████░░░░░░░░░░░░ 40%
+⚠️ Quiz Module:           ████████░░░░░░░░░░░░ 40%
+⚠️ RESTful PUT/PATCH:     ░░░░░░░░░░░░░░░░░░░░ 0%
+📝 Documentation:         ████████░░░░░░░░░░░░ 40%
+📊 Presentation:          ████████░░░░░░░░░░░░ 40%
+📱 APK/Deployment:        ██████░░░░░░░░░░░░░░ 30%
+```
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 🎯 Current Grade Estimate (UPDATED)
-Aspect	Before	After Auth	After All Fixes
-Technical Foundation	A (90%)	A (90%)	A (90%)
-UI/UX Design	A- (85%)	A (90%)	A (90%)
-Authentication	F (0%)	A (90%) ✅	A (90%)
-Quiz Functionality	F (0%)	F (0%)	A (90%)
-Flashcard Functionality	F (0%)	F (0%)	A (90%)
-RESTful Standards	F (0%)	F (0%)	A (95%)
-Documentation	F (0%)	F (0%)	A (90%)
-Presentation	F (0%)	F (0%)	A (90%)
-Current Overall:	~45% (Failing)	~65% (D)	90% (A)
+
+| Aspect | Before | After Auth | After Flashcards | After All Fixes |
+|--------|--------|------------|------------------|-----------------|
+| Technical Foundation | A (90%) | A (90%) | A (90%) | A (90%) |
+| UI/UX Design | A- (85%) | A (90%) | A (95%) | A (95%) |
+| Authentication | F (0%) | A (90%) ✅ | A (90%) | A (90%) |
+| Quiz Functionality | F (0%) | F (0%) | F (0%) | A (90%) |
+| Flashcard Functionality | F (0%) | F (0%) | A (95%) ✅ | A (95%) |
+| RESTful Standards | F (0%) | F (0%) | F (0%) | A (95%) |
+| Documentation | F (0%) | F (0%) | F (0%) | A (90%) |
+| Presentation | F (0%) | F (0%) | F (0%) | A (90%) |
+
+**Current Overall:** ~75% (C+) → **Target: 90% (A)**
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 🚀 RECOMMENDED ORDER OF WORK - NEXT TASKS
-TODAY (After Auth Completion)
-Time	Task	What to Do
-4 hours	Fix Practice Quiz	Make quiz generate from uploaded documents (not "Intro to AI")
-3 hours	Fix Flashcards	Make flashcards generate from uploaded documents (not sample Laravel)
-1 hour	Create Tracking Tables	Run migrations for user_progress, quiz_attempts, flashcard_mastery
-Day 2
-Time	Task	What to Do
-2 hours	Quiz User Controls	Add number of questions, difficulty, timer settings
-2 hours	Flashcard User Controls	Add study modes, auto-flip, shuffle
-2 hours	Save Results to DB	Store quiz scores and flashcard mastery
-2 hours	Implement PUT/PATCH Routes	Add RESTful update endpoints
-Day 3
-Time	Task
-4 hours	Documentation Chapter 1-3
-3 hours	Documentation Chapter 4-5
-1 hour	Screenshots + Gantt Chart
-Day 4
-Time	Task
-2 hours	PowerPoint Presentation
-1 hour	Demo Video recording
-2 hours	APK Generation
-🎯 WHAT'S NEXT AFTER AUTHENTICATION?
-Your Next Task: FIX PRACTICE QUIZ (4 hours)
-What you need to do:
 
-Modify QuizController@generate - Accept uploaded document instead of using sample questions
+**Day 1 (Today)**
+| Time | Task | What to Do |
+|------|------|------------|
+| 1 hour | Auth Minor Fixes | Fix session persistence, guest mode edge cases |
+| 1 hour | AI Memory Test | Verify conversation context works across messages |
+| 3 hours | Practice Quiz Backend | Make quiz generate from uploaded documents |
+| 2 hours | Practice Quiz UI/UX | Theme toggle, completion modal, material icons |
 
-Add file upload support - Handle PDF, DOC, TXT files
+**Day 2**
+| Time | Task | What to Do |
+|------|------|------------|
+| 3 hours | Lessons UI/UX Major | Add database sync for progress, notes, bookmarks |
+| 1 hour | Quiz Results DB | Save quiz scores and attempts to database |
+| 1 hour | Create Tracking Tables | Run migrations for user_progress, quiz_attempts |
+| 2 hours | RESTful PUT/PATCH | Implement update endpoints |
 
-Extract text from uploaded documents - Use a package like spatie/pdf-to-text or OpenAI document parsing
+**Day 3**
+| Time | Task |
+|------|------|
+| 4 hours | Documentation Chapter 1-3 |
+| 3 hours | Documentation Chapter 4-5 |
+| 1 hour | Screenshots + Gantt Chart |
+| 1 hour | APA References (5+ sources) |
 
-Send document text to Gemini API - Generate custom questions based on the content
+**Day 4**
+| Time | Task |
+|------|------|
+| 2 hours | PowerPoint Presentation |
+| 1 hour | Demo Video recording |
+| 2 hours | APK Generation |
+| 1 hour | GitHub Deployment (public repo) |
 
-Add quiz settings UI - Let user choose:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Number of questions (5, 10, 15, 20)
+🎯 DETAILED NEXT ACTIONS
 
-Difficulty level (Easy, Medium, Hard)
+**1. Auth Minor Fixes (1 hour)**
+- Fix any session persistence issues after login/logout
+- Ensure guest mode properly isolates data
+- Verify password reset flow works end-to-end
+- Add "Remember Me" functionality testing
+- Fix any redirect issues after authentication
 
-Timer settings
+**2. AI Conversation Memory Test (1 hour)**
+- Test if Gemini remembers context within same session
+- Verify conversation history is being stored correctly
+- Test across different modes (ASK, SUMMARIZE, ELI5, CODE)
+- Ensure session_id properly persists across page refreshes
 
-Implement backup system - Use pre-defined scripts ONLY when API fails
+**3. Practice Quiz - Dynamic Generation (4 hours)**
 
-Files to modify:
+*Files to modify:*
+- `app/Http/Controllers/QuizController.php`
+- `resources/views/quizzes/generate.blade.php`
+- `resources/views/quizzes/take.blade.php`
+- `routes/web.php`
 
-app/Http/Controllers/QuizController.php
+*Implementation:*
+- User uploads document (PDF, DOC, DOCX, TXT)
+- AI analyzes document content using Gemini API
+- AI generates custom quiz questions based on THAT document
+- User takes quiz with timer
+- IF API fails → Fallback to pre-defined scripts
 
-resources/views/quizzes/generate.blade.php
+**4. Quiz UI/UX Improvements (2 hours)**
 
-resources/views/quizzes/take.blade.php
+Same improvements as flashcards:
+- Theme toggle (Dark/Light mode) on all quiz pages
+- Consolas monospace font across UI
+- Material Icons instead of emojis
+- Completion modal with statistics (score, time, accuracy)
+- Rating feedback for answers
+- Keyboard navigation
+- Progress bar during quiz
+- Sidebar with question list
 
-routes/web.php (add PUT/PATCH routes for quiz settings)
+**5. Lessons UI/UX - Major Improvement (3 hours)**
 
-Second Task: FIX FLASHCARDS (3 hours)
-What you need to do:
+*Features to add:*
+- Mark lesson as complete → PATCH /lessons/{id}/complete
+- Add personal notes (database, not session) → POST/PUT /lessons/{id}/notes
+- Bookmark important lessons → PATCH /lessons/{id}/bookmark
+- Rate lesson (1-5 stars) → PATCH /lessons/{id}/rating
+- Add tags/categories → PATCH /lessons/{id}/tags
+- Filter by tags → GET /lessons?tag={tag}
+- Sort by date, title, progress → GET /lessons?sort={field}
+- Download lesson as PDF → GET /lessons/{id}/download
+- Share lesson link → GET /lessons/{id}/share
+- Theme toggle on lessons pages
 
-Modify FlashcardController@generate - Accept uploaded document
+**6. RESTful PUT/PATCH Endpoints (2 hours)**
+- PUT /lessons/{id} - Full lesson update
+- PATCH /lessons/{id} - Partial lesson update
+- PUT /flashcards/{id} - Full flashcard update
+- PATCH /flashcards/{id} - Partial flashcard update
+- PUT /quizzes/{id} - Full quiz update
+- PATCH /quizzes/{id} - Partial quiz update
+- Add proper 403 Forbidden responses
+- Add 422 Unprocessable Entity for validation failures
 
-Extract key concepts using Gemini API
-
-Generate Q&A pairs from the document content
-
-Add flashcard settings UI:
-
-Number of cards (5, 10, 20, 30)
-
-Study mode (Normal, Spaced Repetition, Quiz Mode)
-
-Auto-flip timer
-
-Implement mastery tracking - Save to database when user marks card as "Easy/Hard"
-
-Files to modify:
-
-app/Http/Controllers/FlashcardController.php
-
-resources/views/flashcards/generate.blade.php
-
-resources/views/flashcards/index.blade.php
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📊 HTTP Status Codes Implemented
-Status Code	Meaning	When to Use	Status
-200	OK	Successful GET, PUT, PATCH, DELETE	✅
-201	Created	Successful POST (new resource)	✅
-400	Bad Request	Validation errors	✅
-401	Unauthorized	Not logged in	✅
-403	Forbidden	Logged in but no permission	⚠️ Add
-404	Not Found	Resource doesn't exist	✅
-422	Unprocessable Entity	Validation failed	⚠️ Add
-500	Internal Server Error	Server/API error	✅
+
+| Status Code | Meaning | When to Use | Status |
+|-------------|---------|-------------|--------|
+| 200 | OK | Successful GET, PUT, PATCH, DELETE | ✅ |
+| 201 | Created | Successful POST (new resource) | ✅ |
+| 400 | Bad Request | Validation errors | ✅ |
+| 401 | Unauthorized | Not logged in | ✅ |
+| 403 | Forbidden | Logged in but no permission | ⚠️ Add |
+| 404 | Not Found | Resource doesn't exist | ✅ |
+| 422 | Unprocessable Entity | Validation failed | ⚠️ Add |
+| 500 | Internal Server Error | Server/API error | ✅ |
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ✅ Authentication Summary - COMPLETED
-Feature	Status
-Login Page	✅ Complete (redesigned with animations)
-Register Page	✅ Complete (redesigned with password strength)
-Guest Mode	✅ Complete (browse without account)
-User Isolation	✅ Complete (each user sees own data)
-Password Reset	✅ Complete (forgot password flow)
-Session Management	✅ Complete
-Dark/Light Mode	✅ Complete (toggle on auth pages)
-Form Validation	✅ Complete (real-time validation)
-Last Updated: May 22, 2026
-Status: 75% Complete - Authentication DONE ✅
-Next Milestone: Dynamic Quiz + Dynamic Flashcards + RESTful PUT/PATCH
 
-🚀 YOUR NEXT ACTION:
-Run these commands to create the tracking tables:
+| Feature | Status |
+|---------|--------|
+| Login Page | ✅ Complete (redesigned with animations) |
+| Register Page | ✅ Complete (redesigned with password strength) |
+| Guest Mode | ✅ Complete (browse without account) |
+| User Isolation | ✅ Complete (each user sees own data) |
+| Password Reset | ✅ Complete (forgot password flow) |
+| Session Management | ✅ Complete |
+| Dark/Light Mode | ✅ Complete (toggle on auth pages) |
+| Form Validation | ✅ Complete (real-time validation) |
 
-bash
-php artisan make:migration create_user_progress_table
-php artisan make:migration create_quiz_attempts_table
-php artisan make:migration create_flashcard_mastery_table
-php artisan make:migration create_user_settings_table
-php artisan make:migration create_lesson_notes_table
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Flashcards Summary - COMPLETED
+
+| Feature | Status |
+|---------|--------|
+| PDF Text Extraction | ✅ pdftotext.exe integrated |
+| AI Flashcard Generation | ✅ Gemini API content-specific |
+| Deck Organization | ✅ Each document = one deck |
+| Mastery Tracking | ✅ Easy/Medium/Hard to database |
+| Rating Feedback | ✅ Toast notifications (Red/Yellow/Green) |
+| Completion Modal | ✅ Statistics modal with accuracy & time |
+| Theme Toggle | ✅ Added to all flashcard pages |
+| Consolas Font | ✅ Unified monospace font |
+| Material Icons | ✅ No emojis |
+| Keyboard Navigation | ✅ Arrow keys + Spacebar |
+| Uncategorized Cards | ✅ Removed |
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 YOUR NEXT ACTION (Immediate)
+
+```bash
+# Step 1: Run pending migrations if any
 php artisan migrate
-Then start working on the Practice Quiz fix!
+
+# Step 2: Test AI conversation memory
+# Open browser → Go to dashboard → ASK a question
+# Then ask a follow-up question referencing the previous answer
+
+# Step 3: Test guest mode and user isolation
+# Open incognito window → Browse as Guest
+# Verify cannot see logged-in user's data
+
+# Step 4: Start working on Practice Quiz
+# Modify QuizController.php to accept file uploads
+# Add text extraction from uploaded documents
+# Generate dynamic quiz questions using Gemini API
+```
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Last Updated: May 22, 2026 (Late Evening)
+Status: 85% Complete - Flashcards DONE ✅
+Next Milestone: Practice Quiz Dynamic Generation + Lessons UI Major Improvement
+Estimated Completion: May 25, 2026
+```
