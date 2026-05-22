@@ -1,7 +1,11 @@
+Great! I'll update both the PROJECT_STRUCTURE.md and README.md with all the completed work and remaining tasks.
+
+## Updated PROJECT_STRUCTURE.md
+
 ```markdown
 📁 ELI-APP Project Structure
-Updated: May 22, 2026 (Late Evening)
-Status: FLASHCARDS MODULE ✅ 100% COMPLETE | Next: Auth Fixes → Lessons UI → Practice Quiz
+Updated: May 23, 2026 (Morning)
+Status: LESSONS MODULE ✅ 100% COMPLETE | Next: QUIZ MODULE Major Overhaul
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -30,7 +34,10 @@ ELI-APP/
 │  │  ├─ ✅ Flashcard.php
 │  │  ├─ ✅ FlashcardMastery.php
 │  │  ├─ ✅ Lesson.php
+│  │  ├─ ✅ LessonBookmark.php
 │  │  ├─ ✅ LessonContent.php
+│  │  ├─ ✅ LessonNote.php
+│  │  ├─ ✅ LessonUserProgress.php
 │  │  ├─ ✅ Project.php
 │  │  ├─ ✅ Quiz.php
 │  │  ├─ ✅ QuizQuestion.php
@@ -48,6 +55,7 @@ ELI-APP/
 │  │
 │  └─ ✅ Traits/
 │     └─ ✅ GetCurrentUserId.php
+
 │
 ├─ ✅ bootstrap/
 │  ├─ ✅ app.php
@@ -87,7 +95,10 @@ ELI-APP/
 │  │  ├─ ✅ 2026_05_21_173735_add_settings_to_quizzes_table.php
 │  │  ├─ ✅ 2026_05_21_173957_add_settings_to_quizzes_table.php
 │  │  ├─ ✅ 2026_05_22_045420_add_is_guest_to_users_table.php
-│  │  └─ ✅ 2026_05_22_063655_create_flashcard_mastery_table.php
+│  │  ├─ ✅ 2026_05_22_063655_create_flashcard_mastery_table.php
+│  │  ├─ ✅ 2026_05_23_000001_create_lesson_user_progress_table.php
+│  │  ├─ ✅ 2026_05_23_000002_create_lesson_notes_table.php
+│  │  └─ ✅ 2026_05_23_000003_create_lesson_bookmarks_table.php
 │  └─ ✅ seeders/
 │     └─ ✅ DatabaseSeeder.php
 │
@@ -114,7 +125,7 @@ ELI-APP/
 │     ├─ ✅ flashcards/
 │     │  ├─ ✅ deck.blade.php
 │     │  ├─ ✅ generate.blade.php
-│     │  └─ ✅ index.blade.php
+│     │  └─ ✅ index.blade.php (Yellow/Orange stroke design)
 │     ├─ ✅ layouts/
 │     │  └─ ✅ app.blade.php
 │     ├─ ✅ lessons/
@@ -122,12 +133,13 @@ ELI-APP/
 │     │  ├─ ✅ demo-card.blade.php
 │     │  ├─ ✅ demo-index.blade.php
 │     │  ├─ ✅ demo-show.blade.php
-│     │  ├─ ✅ index.blade.php
-│     │  └─ ✅ show.blade.php
+│     │  ├─ ✅ index.blade.php (Green stroke design, fixed)
+│     │  └─ ✅ show.blade.php (Delete fixed, JSON response)
 │     └─ ✅ quizzes/
-│        ├─ ✅ generate.blade.php
-│        ├─ ✅ index.blade.php
-│        └─ ✅ take.blade.php
+│        ├─ ✅ generate.blade.php (NEEDS REDESIGN - Purple theme)
+│        ├─ ✅ index.blade.php (NEEDS REDESIGN - Purple theme)
+│        └─ ✅ take.blade.php (NEEDS REDESIGN - Purple theme, timer toggle)
+
 │
 ├─ ✅ routes/
 │  ├─ ✅ api.php
@@ -148,11 +160,17 @@ ELI-APP/
 ├─ ✅ .gitattributes
 ├─ ✅ .gitignore
 ├─ ✅ .npmrc
+├─ ✅ .env
+├─ ✅ .env.example
 ├─ ✅ after('user_id')
 ├─ ✅ artisan
 ├─ ✅ composer.json
+├─ ✅ composer.lock
 ├─ ✅ laravel.txt
 ├─ ✅ package.json
+├─ ✅ package-lock.json
+├─ ✅ pdftotext.exe
+├─ ✅ phpunit.xml
 ├─ ✅ postcss.config.js
 ├─ ✅ PROJECT_STRUCTURE.md
 ├─ ✅ README.md
@@ -169,356 +187,193 @@ ELI-APP/
 | Core App | Laravel + MySQL | ✅ Complete |
 | AI Integration | Google Gemini API | ✅ Complete |
 | 4 AI Modes | ASK, SUMMARIZE, ELI5, CODE | ✅ Complete |
-| Lessons UI | Good UI design | ✅ Complete |
-| Flashcards UI | Complete redesign with Consolas font & Material Icons | ✅ COMPLETE |
-| Quizzes UI | Good UI design | ✅ Complete |
-| Dark/Light Theme | Working on all pages including flashcards | ✅ COMPLETE |
+| Lessons Module | Complete CRUD with progress, notes, bookmarks | ✅ COMPLETE |
+| Flashcards Module | Yellow/Orange stroke design with mastery tracking | ✅ COMPLETE |
+| Quizzes UI | Needs major overhaul | ⚠️ IN PROGRESS |
+| Dark/Light Theme | Working on all pages | ✅ Complete |
 | Voice Input | Speech recognition | ✅ Complete |
-| GitHub Backup | Code stored | ✅ Complete |
-| Authentication | Login/Register/Guest Mode | ✅ COMPLETE |
-| User Isolation | Each user sees own data | ✅ COMPLETE |
-| Guest Mode | Browse without account | ✅ COMPLETE |
-| Auth UI/UX | Redesigned with animations | ✅ COMPLETE |
-| Flashcard Generation | AI-powered from PDF/DOCX/TXT | ✅ COMPLETE |
-| Flashcard Mastery | Easy/Medium/Hard ratings saved to DB | ✅ COMPLETE |
-| Completion Modal | Statistics modal with accuracy & time | ✅ COMPLETE |
-| Theme Toggle | Added to all flashcard pages | ✅ COMPLETE |
+| Authentication | Login/Register/Guest Mode | ✅ Complete |
+| User Isolation | Each user sees own data | ✅ Complete |
+| Database Tables | All migrations created and ran | ✅ Complete |
+| Lesson Delete Fix | JSON response, proper AJAX handling | ✅ COMPLETE |
+| Button Design | Stroke + light background (0.1 opacity) | ✅ COMPLETE |
+| Hover/Pressed Effects | Scale transforms on all interactive elements | ✅ COMPLETE |
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🔴 CRITICAL ISSUES NEEDING MAJOR REVISION
+🔴 CRITICAL ISSUES NEEDING MAJOR REVISION - QUIZ MODULE
 
-1. Authentication System - ✅ COMPLETED
-
-| Task | Description | Priority | Status |
-|------|-------------|----------|--------|
-| Login Page | User authentication | 🔴 HIGH | ✅ COMPLETE |
-| Register Page | New user signup | 🔴 HIGH | ✅ COMPLETE |
-| Guest Mode | Browse without account | 🔴 HIGH | ✅ COMPLETE |
-| User Table | Connect to MySQL database | 🔴 HIGH | ✅ COMPLETE |
-| Password Reset | Forgot password feature | 🟡 MEDIUM | ✅ COMPLETE |
-| Session Management | User-specific data | 🔴 HIGH | ✅ COMPLETE |
-| User Profile | Update user info | 🟡 MEDIUM | ⚠️ NEXT |
-| User Preferences | Settings management | 🟢 LOW | ⚠️ NEXT |
-
-2. Practice Quiz - NEXT TASK ❌
-
-| Current Issue | What Should Happen |
-|---------------|---------------------|
-| Uses pre-defined "Intro to AI" sample | Generate questions from UPLOADED document |
-| Not dynamic | FULLY DYNAMIC based on user's content |
-| Backup script runs as primary | Backup ONLY when API fails |
-
-**Expected Behavior:**
-- User uploads a document (PDF, DOC, TXT)
-- AI analyzes the document content
-- AI generates custom quiz questions based on THAT document
-- User takes quiz with timer
-- IF API fails → Fallback to pre-defined scripts
-
-**User Controls Needed:**
-
-| Control | Endpoint |
-|---------|----------|
-| Number of questions (5, 10, 15, 20) | PATCH /quiz/{id}/settings |
-| Difficulty level (Easy, Medium, Hard) | PATCH /quiz/{id}/difficulty |
-| Question type (Multiple Choice, True/False, Fill in blank) | PATCH /quiz/{id}/type |
-| Timer on/off | PATCH /quiz/{id}/timer |
-| Time limit setting (1min, 2min, 5min, 10min) | PATCH /quiz/{id}/timelimit |
-| Retake option | PATCH /quiz/{id}/retake |
-| Save results to database | POST /quiz/{id}/results |
-
-3. Flashcards - ✅ COMPLETED
-
-| Current Issue | What Should Happen | Status |
-|---------------|---------------------|--------|
-| Shows sample Laravel questions | Generate flashcards from UPLOADED document | ✅ FIXED |
-| Not dynamic | FULLY DYNAMIC based on user's content | ✅ FIXED |
-| Basic flip only | Advanced study modes with mastery tracking | ✅ FIXED |
-
-**Working Features:**
-- ✅ User uploads document → AI extracts key concepts
-- ✅ AI generates custom flashcards (Q&A pairs)
-- ✅ User studies with spaced repetition
-- ✅ IF API fails → Fallback to content-based extraction
-- ✅ Mastery tracking (Easy/Medium/Hard saved to database)
-- ✅ Completion modal with statistics
-- ✅ Theme toggle on all flashcard pages
-
-4. Review Lessons - UX REVISION NEEDED ⚠️
-
-| Current Issue | What Should Happen | HTTP Method |
-|---------------|---------------------|-------------|
-| Works but needs improvement | Add user customization | - |
-| Progress saves locally | Sync to database with auth | POST/PATCH |
-
-**User Controls Needed:**
-
-| Control | Endpoint |
-|---------|----------|
-| Mark lesson as complete | PATCH /lessons/{id}/complete |
-| Add personal notes | POST /lessons/{id}/notes, PUT /lessons/{id}/notes |
-| Bookmark important lessons | PATCH /lessons/{id}/bookmark |
-| Set reading reminders | POST /lessons/{id}/reminder |
-| Download lesson as PDF | GET /lessons/{id}/download |
-| Share lesson link | GET /lessons/{id}/share |
-| Rate lesson (1-5 stars) | PATCH /lessons/{id}/rating |
-| Add tags/categories | PATCH /lessons/{id}/tags |
-| Filter by tags | GET /lessons?tag={tag} |
-| Sort by date, title, progress | GET /lessons?sort={field} |
+| Issue | Current Behavior | Expected Behavior |
+|-------|------------------|-------------------|
+| Quiz Generation | Uses pre-defined "Intro to AI" sample | Generate questions from UPLOADED document content |
+| Text Extraction | Shows "install pdftotext" message | Properly extract text from PDF/DOCX/TXT |
+| Route Error | Route [quizzes.results] not defined | Define proper results route |
+| Flashcards in Lessons | Flashcard decks appear in Lessons tab | Separate concerns - Flashcards in Flashcards tab only |
+| Timer | No hide/show option | Add toggle to show/hide timer |
+| Quiz UI/UX | Basic, inconsistent design | Match flashcards/lessons design with PURPLE theme |
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📋 NEW TABLES NEEDED FOR DATABASE
+🎨 UI THEMES BY MODULE
 
-Already Created ✅
-```sql
--- Users table - ✅ EXISTS (with is_guest column)
--- password_reset_tokens - ✅ EXISTS
--- sessions - ✅ EXISTS
--- flashcards - ✅ EXISTS
--- flashcard_mastery - ✅ EXISTS
--- lessons - ✅ EXISTS
--- lesson_contents - ✅ EXISTS
--- quizzes - ✅ EXISTS
--- quiz_questions - ✅ EXISTS
--- conversations - ✅ EXISTS
-```
-
-Need to Create ❌
-```sql
--- User progress (tracking)
-CREATE TABLE user_progress (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL,
-    lesson_id BIGINT NULL,
-    flashcard_id BIGINT NULL,
-    quiz_id BIGINT NULL,
-    progress_percent INT DEFAULT 0,
-    completed BOOLEAN DEFAULT FALSE,
-    last_accessed TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (lesson_id) REFERENCES lessons(id),
-    FOREIGN KEY (flashcard_id) REFERENCES flashcards(id),
-    FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
-);
-
--- User quiz attempts (scores)
-CREATE TABLE quiz_attempts (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL,
-    quiz_id BIGINT NOT NULL,
-    score INT NOT NULL,
-    total_questions INT NOT NULL,
-    time_taken INT NULL,
-    completed_at TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
-);
-
--- User settings/preferences
-CREATE TABLE user_settings (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL UNIQUE,
-    theme VARCHAR(50) DEFAULT 'dark',
-    auto_flip_timer INT DEFAULT 3,
-    default_quiz_questions INT DEFAULT 10,
-    default_difficulty VARCHAR(20) DEFAULT 'medium',
-    email_notifications BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
--- User lesson notes
-CREATE TABLE lesson_notes (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL,
-    lesson_id BIGINT NOT NULL,
-    content TEXT NOT NULL,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (lesson_id) REFERENCES lessons(id)
-);
-```
+| Module | Theme Color | Button Style |
+|--------|-------------|--------------|
+| Lessons | Green (#22c55e) | Stroke + light green background (0.1 opacity) |
+| Flashcards | Yellow/Orange (#eab308 → #f97316) | Stroke + light yellow background (0.1 opacity) |
+| Quizzes | Purple (#a855f7) | Stroke + light purple background (0.1 opacity) |
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📋 What Still NEEDS to be ACCOMPLISHED ❌
+📋 QUIZ MODULE - REQUIRED FIXES (HIGH PRIORITY)
 
-🔴 HIGH PRIORITY (Next Tasks)
+**1. Database & Text Extraction**
+- [ ] Fix TextExtractorService to properly extract text from uploaded documents
+- [ ] Ensure PDF extraction works with pdftotext.exe
+- [ ] Add support for DOCX and TXT files
+- [ ] Log extraction errors for debugging
 
-| Order | Task | Description | Status | Time | HTTP Methods |
-|-------|------|-------------|--------|------|--------------|
-| 1 | Auth Minor Fixes | Fix session persistence, guest mode edge cases | ❌ 0% | 1 hour | - |
-| 2 | AI Conversation Memory | Test and fix context memory in main chat | ❌ 0% | 1 hour | - |
-| 3 | Fix Practice Quiz | Make FULLY DYNAMIC from uploaded docs | ❌ 0% | 4 hours | POST, PATCH |
-| 4 | Quiz UI/UX | Add theme toggle, completion modal, material icons | ❌ 0% | 2 hours | PATCH |
-| 5 | Lessons UI/UX | Add database sync for progress, notes, bookmarks | ❌ 0% | 3 hours | PATCH, GET |
-| 6 | RESTful PUT/PATCH | Implement full update endpoints | ❌ 0% | 2 hours | PUT, PATCH |
+**2. Quiz Generation Flow**
+```php
+// Current (Broken):
+- User uploads document
+- System ignores document
+- Uses pre-defined "Intro to AI" questions
 
-🟡 MEDIUM PRIORITY
-
-| Task | Description | Status | Time | HTTP Methods |
-|------|-------------|--------|------|--------------|
-| User Progress Tables | Create migration for tracking | ❌ 0% | 1 hour | - |
-| Quiz Attempts History | Save scores to database | ❌ 0% | 1 hour | POST, GET |
-| User Settings Table | Store user preferences | ❌ 0% | 30 min | - |
-| Lesson Notes Feature | Save personal notes to database | ❌ 0% | 1 hour | POST, PUT, DELETE |
-| User Profile Page | Edit profile, change password | ❌ 0% | 2 hours | PUT, PATCH |
-| APK Generation | Convert to Android | ❌ 0% | 2 hours | - |
-| Screenshots | For documentation | ❌ 0% | 30 min | - |
-| Gantt Chart | Project timeline | ❌ 0% | 1 hour | - |
-
-🟢 LOW PRIORITY
-
-| Task | Description | Status | Time |
-|------|-------------|--------|------|
-| APA References | 5+ scholarly sources | ❌ 0% | 2 hours |
-| Contribution Matrix | Team roles | ❌ 0% | 30 min |
-| Social Sharing | Share quiz scores | ❌ 0% | 2 hours |
-| Email Notifications | Password reset, reminders | ❌ 0% | 2 hours |
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📈 Progress Summary (UPDATED)
-
-```
-Overall Progress: ████████████████████░░ 85%
-
-✅ Technical Core:        ████████████████████ 100%
-✅ UI Design:             ████████████████████ 100%
-✅ Authentication:        ████████████████████ 100%
-✅ Flashcards Module:     ████████████████████ 100% ⬆️ NEW
-⚠️ Lessons Module:        ████████░░░░░░░░░░░░ 40%
-⚠️ Quiz Module:           ████████░░░░░░░░░░░░ 40%
-⚠️ RESTful PUT/PATCH:     ░░░░░░░░░░░░░░░░░░░░ 0%
-📝 Documentation:         ████████░░░░░░░░░░░░ 40%
-📊 Presentation:          ████████░░░░░░░░░░░░ 40%
-📱 APK/Deployment:        ██████░░░░░░░░░░░░░░ 30%
-```
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎯 Current Grade Estimate (UPDATED)
-
-| Aspect | Before | After Auth | After Flashcards | After All Fixes |
-|--------|--------|------------|------------------|-----------------|
-| Technical Foundation | A (90%) | A (90%) | A (90%) | A (90%) |
-| UI/UX Design | A- (85%) | A (90%) | A (95%) | A (95%) |
-| Authentication | F (0%) | A (90%) ✅ | A (90%) | A (90%) |
-| Quiz Functionality | F (0%) | F (0%) | F (0%) | A (90%) |
-| Flashcard Functionality | F (0%) | F (0%) | A (95%) ✅ | A (95%) |
-| RESTful Standards | F (0%) | F (0%) | F (0%) | A (95%) |
-| Documentation | F (0%) | F (0%) | F (0%) | A (90%) |
-| Presentation | F (0%) | F (0%) | F (0%) | A (90%) |
-
-**Current Overall:** ~75% (C+) → **Target: 90% (A)**
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🚀 RECOMMENDED ORDER OF WORK - NEXT TASKS
-
-**Day 1 (Today)**
-| Time | Task | What to Do |
-|------|------|------------|
-| 1 hour | Auth Minor Fixes | Fix session persistence, guest mode edge cases |
-| 1 hour | AI Memory Test | Verify conversation context works across messages |
-| 3 hours | Practice Quiz Backend | Make quiz generate from uploaded documents |
-| 2 hours | Practice Quiz UI/UX | Theme toggle, completion modal, material icons |
-
-**Day 2**
-| Time | Task | What to Do |
-|------|------|------------|
-| 3 hours | Lessons UI/UX Major | Add database sync for progress, notes, bookmarks |
-| 1 hour | Quiz Results DB | Save quiz scores and attempts to database |
-| 1 hour | Create Tracking Tables | Run migrations for user_progress, quiz_attempts |
-| 2 hours | RESTful PUT/PATCH | Implement update endpoints |
-
-**Day 3**
-| Time | Task |
-|------|------|
-| 4 hours | Documentation Chapter 1-3 |
-| 3 hours | Documentation Chapter 4-5 |
-| 1 hour | Screenshots + Gantt Chart |
-| 1 hour | APA References (5+ sources) |
-
-**Day 4**
-| Time | Task |
-|------|------|
-| 2 hours | PowerPoint Presentation |
-| 1 hour | Demo Video recording |
-| 2 hours | APK Generation |
-| 1 hour | GitHub Deployment (public repo) |
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎯 DETAILED NEXT ACTIONS
-
-**1. Auth Minor Fixes (1 hour)**
-- Fix any session persistence issues after login/logout
-- Ensure guest mode properly isolates data
-- Verify password reset flow works end-to-end
-- Add "Remember Me" functionality testing
-- Fix any redirect issues after authentication
-
-**2. AI Conversation Memory Test (1 hour)**
-- Test if Gemini remembers context within same session
-- Verify conversation history is being stored correctly
-- Test across different modes (ASK, SUMMARIZE, ELI5, CODE)
-- Ensure session_id properly persists across page refreshes
-
-**3. Practice Quiz - Dynamic Generation (4 hours)**
-
-*Files to modify:*
-- `app/Http/Controllers/QuizController.php`
-- `resources/views/quizzes/generate.blade.php`
-- `resources/views/quizzes/take.blade.php`
-- `routes/web.php`
-
-*Implementation:*
+// Expected (Fixed):
 - User uploads document (PDF, DOC, DOCX, TXT)
-- AI analyzes document content using Gemini API
-- AI generates custom quiz questions based on THAT document
-- User takes quiz with timer
-- IF API fails → Fallback to pre-defined scripts
+- System extracts text content
+- AI analyzes content via Gemini API
+- AI generates custom questions based on THAT document
+- IF API fails → Fallback to keyword extraction from content
+```
 
-**4. Quiz UI/UX Improvements (2 hours)**
+**3. Quiz Generation UI (Purple Theme)**
+```
+┌─────────────────────────────────────────────────────────────┐
+│  BACK TO HOME    Generate AI Quiz    [Theme Toggle]        │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │  Upload a document and AI will create a multiple-      │ │
+│  │  choice quiz based on the content.                     │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                                                              │
+│  QUIZ TITLE                                                  │
+│  [_________________________]                                │
+│                                                              │
+│  DESCRIPTION (OPTIONAL)                                     │
+│  [_________________________]                                │
+│                                                              │
+│  UPLOAD DOCUMENT                                            │
+│  [Choose File] No file chosen                               │
+│                                                              │
+│  NUMBER OF QUESTIONS                                        │
+│  [10 ▼] (5, 10, 15, 20, 25)                                │
+│                                                              │
+│  TIME LIMIT (PER QUESTION)                                  │
+│  [30 seconds ▼] (15s, 30s, 45s, 60s, 90s, No limit)        │
+│                                                              │
+│  ASSIGN TO LESSON (OPTIONAL)                                │
+│  [No lesson ▼]                                              │
+│                                                              │
+│  [GENERATE QUIZ]                                            │
+└─────────────────────────────────────────────────────────────┘
+```
 
-Same improvements as flashcards:
-- Theme toggle (Dark/Light mode) on all quiz pages
-- Consolas monospace font across UI
-- Material Icons instead of emojis
-- Completion modal with statistics (score, time, accuracy)
-- Rating feedback for answers
-- Keyboard navigation
-- Progress bar during quiz
-- Sidebar with question list
+**4. Quiz Taking UI (Purple Theme)**
+```
+┌─────────────────────────────────────────────────────────────┐
+│  BACK TO QUIZZES    Quiz Title    [Theme Toggle]           │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌──────────────┐  ┌────────────────────────────────────┐  │
+│  │ Quiz Stats   │  │                                    │  │
+│  │              │  │  Question 3 of 10                  │  │
+│  │ Questions: 10│  │  [======    ] 30%                  │  │
+│  │ Answered: 3  │  │                                    │  │
+│  │ Time: 01:23  │  │  What is Artificial Intelligence?  │  │
+│  │ [Hide Timer] │  │                                    │  │
+│  └──────────────┘  │  ○ Option A                        │  │
+│                    │  ○ Option B                        │  │
+│  ┌──────────────┐  │  ○ Option C                        │  │
+│  │ Question     │  │  ● Option D (Selected)             │  │
+│  │ List         │  │                                    │  │
+│  │ 1 ○          │  │  [Previous]    [Next]              │  │
+│  │ 2 ○          │  │                    [Submit]        │  │
+│  │ 3 ● (current)│  └────────────────────────────────────┘  │
+│  │ 4 ○          │                                          │
+│  │ 5 ○          │                                          │
+│  └──────────────┘                                          │
+└─────────────────────────────────────────────────────────────┘
+```
 
-**5. Lessons UI/UX - Major Improvement (3 hours)**
+**5. Quiz Results UI (Purple Theme)**
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    🎉 QUIZ COMPLETE! 🎉                      │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│                      📊 YOUR SCORE                           │
+│                                                              │
+│                    ┌─────────────┐                          │
+│                    │     80%     │                          │
+│                    │   8/10      │                          │
+│                    └─────────────┘                          │
+│                                                              │
+│          ┌─────────┐  ┌─────────┐  ┌─────────┐             │
+│          │   8     │  │   2     │  │  01:23  │             │
+│          │ Correct │  │ Wrong   │  │  Time   │             │
+│          └─────────┘  └─────────┘  └─────────┘             │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │  Question 1: What is AI? (Correct) ✓                   │ │
+│  │  Your answer: Artificial Intelligence                  │ │
+│  └────────────────────────────────────────────────────────┘ │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │  Question 2: What is ML? (Wrong) ✗                     │ │
+│  │  Your answer: Machine Learning                         │ │
+│  │  Correct: Machine Learning is a subset of AI...        │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                                                              │
+│                    [RETAKE QUIZ]  [BACK TO QUIZZES]         │
+└─────────────────────────────────────────────────────────────┘
+```
 
-*Features to add:*
-- Mark lesson as complete → PATCH /lessons/{id}/complete
-- Add personal notes (database, not session) → POST/PUT /lessons/{id}/notes
-- Bookmark important lessons → PATCH /lessons/{id}/bookmark
-- Rate lesson (1-5 stars) → PATCH /lessons/{id}/rating
-- Add tags/categories → PATCH /lessons/{id}/tags
-- Filter by tags → GET /lessons?tag={tag}
-- Sort by date, title, progress → GET /lessons?sort={field}
-- Download lesson as PDF → GET /lessons/{id}/download
-- Share lesson link → GET /lessons/{id}/share
-- Theme toggle on lessons pages
+**6. Routes to Add/Fix**
+```php
+// Add these routes to routes/web.php inside LMS group:
+Route::get('/quizzes/{id}/results', [QuizController::class, 'results'])->name('quizzes.results');
+Route::patch('/quizzes/{id}/timer-settings', [QuizController::class, 'updateTimerSettings'])->name('quizzes.timer-settings');
+Route::post('/quizzes/{id}/retake', [QuizController::class, 'retake'])->name('quizzes.retake');
+```
 
-**6. RESTful PUT/PATCH Endpoints (2 hours)**
-- PUT /lessons/{id} - Full lesson update
-- PATCH /lessons/{id} - Partial lesson update
-- PUT /flashcards/{id} - Full flashcard update
-- PATCH /flashcards/{id} - Partial flashcard update
-- PUT /quizzes/{id} - Full quiz update
-- PATCH /quizzes/{id} - Partial quiz update
-- Add proper 403 Forbidden responses
-- Add 422 Unprocessable Entity for validation failures
+**7. Quiz Controller Methods Needed**
+```php
+// Add these methods to QuizController.php:
+public function results($id) - Show results page
+public function updateTimerSettings(Request $request, $id) - Update time limit
+public function retake($id) - Reset quiz for retake
+public function generateFromDocument(Request $request) - AI-powered generation
+```
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔴 OTHER CRITICAL ISSUES
+
+**1. Flashcard Decks Appearing in Lessons Tab**
+- Current: When generating flashcards, the deck appears in Lessons tab
+- Expected: Flashcards should only appear in Flashcards tab
+- Fix: Check LessonController@index - should only show lessons, not flashcard decks
+- Remove any relationship between flashcards and lessons display
+
+**2. Auth Minor Fixes (Low Priority)**
+- Fix session persistence after login/logout
+- Ensure guest mode properly isolates data
+- Add "Remember Me" functionality
+
+**3. AI Conversation Memory Test (Medium Priority)**
+- Verify Gemini remembers context within same session
+- Test across different modes (ASK, SUMMARIZE, ELI5, CODE)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -537,63 +392,143 @@ Same improvements as flashcards:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-✅ Authentication Summary - COMPLETED
+📈 Progress Summary (UPDATED)
 
-| Feature | Status |
-|---------|--------|
-| Login Page | ✅ Complete (redesigned with animations) |
-| Register Page | ✅ Complete (redesigned with password strength) |
-| Guest Mode | ✅ Complete (browse without account) |
-| User Isolation | ✅ Complete (each user sees own data) |
-| Password Reset | ✅ Complete (forgot password flow) |
-| Session Management | ✅ Complete |
-| Dark/Light Mode | ✅ Complete (toggle on auth pages) |
-| Form Validation | ✅ Complete (real-time validation) |
+```
+Overall Progress: ████████████████████░░ 85%
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-✅ Flashcards Summary - COMPLETED
-
-| Feature | Status |
-|---------|--------|
-| PDF Text Extraction | ✅ pdftotext.exe integrated |
-| AI Flashcard Generation | ✅ Gemini API content-specific |
-| Deck Organization | ✅ Each document = one deck |
-| Mastery Tracking | ✅ Easy/Medium/Hard to database |
-| Rating Feedback | ✅ Toast notifications (Red/Yellow/Green) |
-| Completion Modal | ✅ Statistics modal with accuracy & time |
-| Theme Toggle | ✅ Added to all flashcard pages |
-| Consolas Font | ✅ Unified monospace font |
-| Material Icons | ✅ No emojis |
-| Keyboard Navigation | ✅ Arrow keys + Spacebar |
-| Uncategorized Cards | ✅ Removed |
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🚀 YOUR NEXT ACTION (Immediate)
-
-```bash
-# Step 1: Run pending migrations if any
-php artisan migrate
-
-# Step 2: Test AI conversation memory
-# Open browser → Go to dashboard → ASK a question
-# Then ask a follow-up question referencing the previous answer
-
-# Step 3: Test guest mode and user isolation
-# Open incognito window → Browse as Guest
-# Verify cannot see logged-in user's data
-
-# Step 4: Start working on Practice Quiz
-# Modify QuizController.php to accept file uploads
-# Add text extraction from uploaded documents
-# Generate dynamic quiz questions using Gemini API
+✅ Technical Core:        ████████████████████ 100%
+✅ UI Design:             ████████████████████ 100%
+✅ Authentication:        ████████████████████ 100%
+✅ Flashcards Module:     ████████████████████ 100%
+✅ Lessons Module:        ████████████████████ 100% ⬆️ NEW
+⚠️ Quiz Module:           ██████░░░░░░░░░░░░░░ 30%
+⚠️ RESTful PUT/PATCH:     ░░░░░░░░░░░░░░░░░░░░ 0%
+📝 Documentation:         ████████░░░░░░░░░░░░ 40%
+📊 Presentation:          ████████░░░░░░░░░░░░ 40%
+📱 APK/Deployment:        ██████░░░░░░░░░░░░░░ 30%
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Last Updated: May 22, 2026 (Late Evening)
-Status: 85% Complete - Flashcards DONE ✅
-Next Milestone: Practice Quiz Dynamic Generation + Lessons UI Major Improvement
-Estimated Completion: May 25, 2026
+🎯 Current Grade Estimate (UPDATED)
+
+| Aspect | Before | After Lessons | After Quiz Fix | Target |
+|--------|--------|---------------|----------------|--------|
+| Technical Foundation | A (90%) | A (90%) | A (90%) | A (90%) |
+| UI/UX Design | A (95%) | A (95%) | A (95%) | A (95%) |
+| Authentication | A (90%) | A (90%) | A (90%) | A (90%) |
+| Quiz Functionality | F (0%) | F (0%) | A (90%) | A (90%) |
+| Flashcard Functionality | A (95%) | A (95%) | A (95%) | A (95%) |
+| Lessons Functionality | F (0%) | A (95%) ✅ | A (95%) | A (95%) |
+| RESTful Standards | F (0%) | F (0%) | A (90%) | A (90%) |
+
+**Current Overall:** ~80% (B-) → **Target: 90% (A)**
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 RECOMMENDED ORDER OF WORK - NEXT TASKS
+
+**Phase 1: Quiz Module Core Fixes (Today - 6 hours)**
+
+| Time | Task | What to Do |
+|------|------|------------|
+| 1 hour | Fix TextExtractorService | Ensure PDF/DOCX/TXT extraction works |
+| 2 hours | Fix Quiz Generation | Make AI generate from uploaded document content |
+| 1 hour | Add missing routes | quizzes.results, timer-settings, retake |
+| 2 hours | Fix QuizController | submit, results, retake methods |
+
+**Phase 2: Quiz UI/UX Redesign (Day 2 - 4 hours)**
+
+| Time | Task | What to Do |
+|------|------|------------|
+| 1 hour | Redesign generate.blade.php | Purple stroke theme, match lessons UI |
+| 1 hour | Redesign take.blade.php | Timer toggle, question list, progress bar |
+| 1 hour | Redesign results.blade.php | Score modal with detailed answers |
+| 1 hour | Add theme toggle | Dark/Light mode for all quiz pages |
+
+**Phase 3: Bug Fixes & Cleanup (Day 3 - 3 hours)**
+
+| Time | Task |
+|------|------|
+| 1 hour | Fix flashcard decks appearing in Lessons tab |
+| 1 hour | Auth minor fixes (session, remember me) |
+| 1 hour | Test AI conversation memory |
+
+**Phase 4: Documentation (Day 4 - 6 hours)**
+
+| Time | Task |
+|------|------|
+| 2 hours | Complete technical documentation |
+| 2 hours | Screenshots + User guide |
+| 1 hour | APA References (5+ sources) |
+| 1 hour | PowerPoint Presentation |
+
+**Phase 5: Final Delivery (Day 5 - 4 hours)**
+
+| Time | Task |
+|------|------|
+| 1 hour | Demo Video recording |
+| 2 hours | APK Generation |
+| 1 hour | GitHub final push |
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📁 FILES TO MODIFY FOR QUIZ MODULE
+
+**Backend (Controllers & Services)**
+- `app/Http/Controllers/QuizController.php` - Add results, retake, timer methods
+- `app/Services/TextExtractorService.php` - Fix PDF/DOCX extraction
+- `app/Services/GeminiLMSService.php` - Add generateQuiz method
+- `routes/web.php` - Add missing routes
+
+**Frontend (Views)**
+- `resources/views/quizzes/generate.blade.php` - Complete redesign (Purple theme)
+- `resources/views/quizzes/index.blade.php` - Redesign with cards (Purple theme)
+- `resources/views/quizzes/take.blade.php` - Redesign with timer toggle (Purple theme)
+- `resources/views/quizzes/results.blade.php` - Create new results view
+
+**Database**
+- Add `time_limit` column to quizzes table if not exists
+- Add `settings` JSON column for timer preferences
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎨 DESIGN SPECS - QUIZ MODULE (Purple Theme)
+
+```css
+/* Purple theme color variables */
+--quiz-purple: #a855f7;
+--quiz-purple-light: #c084fc;
+--quiz-purple-dark: #7c3aed;
+
+/* Button styles */
+.quiz-btn {
+    background: rgba(168, 85, 247, 0.1);
+    border: 1.5px solid #a855f7;
+    color: #a855f7;
+    transition: all 0.2s ease;
+}
+
+.quiz-btn:hover {
+    background: rgba(168, 85, 247, 0.2);
+    transform: scale(1.02);
+}
+
+.quiz-btn:active {
+    transform: scale(0.98);
+}
+
+/* Active/selected state */
+.quiz-btn-active {
+    background: #a855f7;
+    color: #ffffff;
+}
+```
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Last Updated: May 23, 2026 (Evening)
+Status: Lessons DONE ✅ | Next: Quiz Module Major Overhaul (Purple Theme)
+Estimated Completion: May 26, 2026
 ```

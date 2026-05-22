@@ -1,3 +1,6 @@
+## Updated README.md
+
+```markdown
 # ELI - Explain Like I'm 5
 
 ## An AI-Powered Learning Management System
@@ -60,6 +63,21 @@ ELI successfully integrates **multiple emerging technologies** as required by th
 
 ---
 
+### 🎨 UI Theme Guide
+
+| Module | Theme Color | Button Style |
+|--------|-------------|--------------|
+| **Lessons** | Green (#22c55e) | Stroke + light green background (0.1 opacity) |
+| **Flashcards** | Yellow/Orange (#eab308 → #f97316) | Stroke + light yellow background (0.1 opacity) |
+| **Quizzes** | Purple (#a855f7) | Stroke + light purple background (0.1 opacity) |
+
+**Button Interaction Effects:**
+- **Hover:** Background opacity increases to 0.2, scale 1.02
+- **Pressed:** Scale 0.98
+- **Active:** Solid color with white/black text
+
+---
+
 ### ✅ Accomplished Features
 
 #### 🔐 Authentication & User Management
@@ -68,6 +86,7 @@ ELI successfully integrates **multiple emerging technologies** as required by th
 - ✅ Password reset functionality
 - ✅ User isolation (each user sees only their own data)
 - ✅ Session management with Laravel
+- ✅ Dark/Light mode toggle on auth pages
 
 #### 🤖 AI Assistant (4 Modes)
 - ✅ **ASK** - General Q&A with Gemini AI
@@ -77,8 +96,9 @@ ELI successfully integrates **multiple emerging technologies** as required by th
 - ✅ Conversation memory (remembers context)
 - ✅ Voice input support
 - ✅ Export chat history
+- ✅ API fallback when rate limit exceeded
 
-#### 📚 Flashcards System
+#### 📚 Flashcards System (Yellow/Orange Theme)
 - ✅ Upload PDF/DOCX/TXT files for flashcard generation
 - ✅ AI extracts key concepts and generates Q&A pairs
 - ✅ Deck-based organization (each document = one deck)
@@ -94,23 +114,31 @@ ELI successfully integrates **multiple emerging technologies** as required by th
 - ✅ Keyboard navigation (← → Space)
 - ✅ Delete individual cards or entire decks
 - ✅ Progress bar per deck
+- ✅ Yellow/Orange stroke button design with hover/pressed effects
 
-#### 📖 Lessons System
+#### 📖 Lessons System (Green Theme)
 - ✅ Create, read, update, delete lessons
 - ✅ Add text, video, file, or link content
-- ✅ Track lesson progress
-- ✅ Bookmark important lessons
-- ✅ Add personal notes
-- ✅ Share lesson links
-- ✅ Download as PDF
+- ✅ Database-backed progress tracking (persists after logout)
+- ✅ Database-backed bookmarks (persist forever)
+- ✅ Database-backed notes (saved permanently)
+- ✅ Mark sections as complete with real-time progress update
+- ✅ Completion modal with statistics
+- ✅ Edit, rename, and delete lesson options (three-dot menu)
+- ✅ Filter lessons by status (All, In Progress, Completed, Bookmarked)
+- ✅ Sort lessons by date, title, or progress
+- ✅ File attachments with VIEW (PDF) and DOWNLOAD options
+- ✅ File notes for each attachment
+- ✅ Green stroke button design with hover/pressed effects
+- ✅ AJAX delete with proper JSON response handling
 
-#### 🎯 Quizzes System
-- ✅ Generate quizzes from uploaded documents
-- ✅ Multiple choice questions
-- ✅ Timer support
-- ✅ Score tracking
-- ✅ Retake option
-- ✅ Results page with detailed feedback
+#### 🎯 Quizzes System (Purple Theme - In Progress)
+- ⚠️ Generate quizzes from uploaded documents (NEEDS FIX)
+- ⚠️ Multiple choice questions with AI generation
+- ⚠️ Timer support with hide/show toggle
+- ⚠️ Score tracking and results page
+- ⚠️ Retake option
+- ⚠️ Results page with detailed feedback
 
 #### 🎨 UI/UX Excellence
 - ✅ Dark/Light theme toggle (persists across sessions)
@@ -118,9 +146,11 @@ ELI successfully integrates **multiple emerging technologies** as required by th
 - ✅ Material Icons (no emojis)
 - ✅ Collapsible sidebar
 - ✅ Responsive design (mobile-ready)
-- ✅ Toast notifications
+- ✅ Toast notifications with animations
 - ✅ Loading animations
 - ✅ Keyboard shortcuts
+- ✅ Consistent button styling across modules
+- ✅ Hover and pressed effects on all interactive elements
 
 ---
 
@@ -179,7 +209,7 @@ cp .env.example .env
 
 Edit `.env` and configure:
 
-```
+```env
 # Database Configuration
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -193,6 +223,9 @@ GEMINI_API_KEY=your_api_key_here
 
 # Application URL
 APP_URL=http://localhost:8000
+
+# Mock AI Mode (for testing without API)
+USE_MOCK_AI=false
 ```
 
 #### Step 5: Generate Application Key
@@ -272,17 +305,47 @@ Simply access `http://your-server-ip:8000` from any mobile browser
 ```
 eli-app/
 ├── app/
-│   ├── Http/Controllers/     # AIController, FlashcardController, etc.
-│   ├── Models/               # User, Flashcard, Lesson, Quiz, etc.
-│   ├── Services/             # GeminiService, TextExtractorService
-│   └── Traits/               # GetCurrentUserId
-├── database/migrations/      # 20+ tables including flashcard_mastery
-├── resources/views/
-│   ├── flashcards/           # index, deck, generate
-│   ├── lessons/              # index, show, create
-│   ├── quizzes/              # index, generate, take
-│   └── layouts/              # app.blade.php (master layout)
-└── routes/web.php            # All application routes
+│   ├── Http/Controllers/
+│   │   ├── AIController.php          # AI chat endpoints
+│   │   ├── LessonController.php      # Lesson CRUD + progress
+│   │   ├── FlashcardController.php   # Flashcard generation + mastery
+│   │   └── QuizController.php        # Quiz generation + taking
+│   ├── Models/
+│   │   ├── User.php                  # Authentication
+│   │   ├── Lesson.php                # Lessons with relationships
+│   │   ├── LessonContent.php         # Lesson sections
+│   │   ├── LessonUserProgress.php    # Progress tracking
+│   │   ├── LessonBookmark.php        # Bookmark storage
+│   │   ├── LessonNote.php            # Note storage
+│   │   ├── Flashcard.php             # Flashcards
+│   │   ├── FlashcardMastery.php      # Mastery levels
+│   │   ├── Quiz.php                  # Quizzes
+│   │   └── QuizQuestion.php          # Quiz questions
+│   └── Services/
+│       ├── GeminiService.php         # AI API wrapper with fallback
+│       ├── GeminiLMSService.php      # Flashcard/Quiz generation
+│       └── TextExtractorService.php  # PDF/DOCX extraction
+├── database/migrations/              # 20+ tables including:
+│   ├── 2026_05_20_124638_create_lessons_table.php
+│   ├── 2026_05_20_124639_create_lesson_contents_table.php
+│   ├── 2026_05_20_124640_create_flashcards_table.php
+│   ├── 2026_05_22_063655_create_flashcard_mastery_table.php
+│   ├── 2026_05_23_000001_create_lesson_user_progress_table.php
+│   ├── 2026_05_23_000002_create_lesson_notes_table.php
+│   └── 2026_05_23_000003_create_lesson_bookmarks_table.php
+└── resources/views/
+    ├── flashcards/
+    │   ├── index.blade.php          # Deck list (Yellow/Orange theme)
+    │   ├── deck.blade.php           # Study interface
+    │   └── generate.blade.php       # Upload + generate
+    ├── lessons/
+    │   ├── index.blade.php          # Lesson list (Green theme)
+    │   ├── show.blade.php           # Lesson content + progress
+    │   └── create.blade.php         # Create new lesson
+    └── quizzes/
+        ├── index.blade.php          # Quiz list (Purple theme - NEEDS FIX)
+        ├── generate.blade.php       # Generate quiz (NEEDS FIX)
+        └── take.blade.php           # Take quiz (NEEDS FIX)
 ```
 
 ---
@@ -319,8 +382,39 @@ eli-app/
 | POST | `/lms/flashcards/{id}/mastery` | Update mastery level |
 | GET | `/lms/lessons` | List lessons |
 | POST | `/lms/lessons` | Create lesson |
+| GET | `/lms/lessons/{id}` | View lesson |
+| PUT | `/lms/lessons/{id}` | Update lesson |
+| DELETE | `/lms/lessons/{id}` | Delete lesson |
+| PATCH | `/lms/lessons/{id}/bookmark` | Toggle bookmark |
+| POST | `/lms/lessons/{id}/notes` | Save notes |
+| DELETE | `/lms/lessons/{lessonId}/content/{contentId}` | Delete section |
 | GET | `/lms/quizzes` | List quizzes |
 | POST | `/lms/quizzes/generate` | Generate quiz from document |
+| GET | `/lms/quizzes/{id}/take` | Take quiz |
+| POST | `/lms/quizzes/{id}/submit` | Submit answers |
+| GET | `/lms/quizzes/{id}/results` | View results (NEEDS FIX) |
+
+---
+
+### 🐛 Known Issues & Next Steps
+
+#### 🔴 HIGH PRIORITY - Quiz Module
+
+| Issue | Status | Expected Fix |
+|-------|--------|--------------|
+| Quiz generation uses pre-defined questions | ❌ Broken | Generate from uploaded document content |
+| Text extraction not working properly | ❌ Broken | Fix pdftotext integration |
+| Route [quizzes.results] not defined | ❌ Broken | Add missing route |
+| Timer has no hide/show option | ❌ Missing | Add toggle button |
+| Quiz UI doesn't match other modules | ❌ Missing | Redesign with Purple theme |
+
+#### 🟡 MEDIUM PRIORITY
+
+| Issue | Status |
+|-------|--------|
+| Flashcard decks appear in Lessons tab | ❌ Needs fix |
+| Auth session persistence | ⚠️ Minor issues |
+| AI conversation memory | ⚠️ Needs testing |
 
 ---
 
@@ -328,8 +422,8 @@ eli-app/
 
 | Role | Member | Contributions |
 |------|--------|---------------|
-| Project Manager / Lead Developer | [Name] | System architecture, Laravel backend, AI integration |
-| UI/UX Designer / Frontend Developer | [Name] | Blade templates, Tailwind CSS, responsive design |
+| Project Manager / Lead Developer | Alther | System architecture, Laravel backend, AI integration, Lessons module |
+| UI/UX Designer / Frontend Developer | [Name] | Blade templates, Tailwind CSS, responsive design, Theme system |
 | Database Designer | [Name] | Schema design, migrations, Eloquent relationships |
 | Documentation Lead | [Name] | Technical documentation, README, user guide |
 
@@ -337,7 +431,9 @@ eli-app/
 
 ### 🔜 Future Improvements
 
-- [ ] Spaced repetition algorithm for flashcards
+- [ ] Complete Quiz Module with Purple theme
+- [ ] Fix text extraction for all document types
+- [ ] Add spaced repetition algorithm for flashcards
 - [ ] Social sharing of quiz scores
 - [ ] Email notifications for reminders
 - [ ] Collaborative study groups
@@ -346,6 +442,7 @@ eli-app/
 - [ ] Export flashcards to Anki
 - [ ] AI-generated lesson plans
 - [ ] Voice response (text-to-speech)
+- [ ] RESTful PUT/PATCH endpoints for all resources
 
 ---
 
@@ -372,4 +469,21 @@ For questions or contributions:
 
 ---
 
+### 📊 Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0.0 | May 20, 2026 | Initial release - Core AI features |
+| 1.1.0 | May 21, 2026 | Authentication + Guest mode |
+| 1.2.0 | May 22, 2026 | Flashcards module complete |
+| 1.3.0 | May 23, 2026 | Lessons module complete (Green theme) |
+| 1.4.0 | TBD | Quiz module overhaul (Purple theme) |
+
+---
+
 **Made with ❤️ for IT323 Final Project**
+
+**Current Version:** 1.3.0
+**Last Updated:** May 22, 2026
+**Status:** Lessons ✅ | Flashcards ✅ | Quiz ⚠️ In Progress
+```

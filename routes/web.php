@@ -172,6 +172,12 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/lessons/{id}/complete', [LessonController::class, 'markComplete'])->name('lessons.complete');
         Route::get('/lessons/{id}/notes', [LessonController::class, 'getNotes']);
         Route::post('/lessons/{id}/notes', [LessonController::class, 'saveNotes']);
+
+        Route::post('/lessons/{lessonId}/file-note/{contentId}', [LessonController::class, 'saveFileNote']);
+
+        // Add content completion + deletion routes
+        Route::patch('/lessons/{lessonId}/content/{contentId}/complete', [LessonController::class, 'toggleContentComplete']);
+        Route::delete('/lessons/{lessonId}/content/{contentId}', [LessonController::class, 'deleteContent']);
         
         // Flashcards
         Route::get('/flashcards', [FlashcardController::class, 'index'])->name('flashcards.index');

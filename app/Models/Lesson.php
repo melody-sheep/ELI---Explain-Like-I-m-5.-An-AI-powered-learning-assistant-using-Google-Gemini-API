@@ -23,7 +23,7 @@ class Lesson extends Model
 
     public function contents()
     {
-        return $this->hasMany(LessonContent::class);
+        return $this->hasMany(LessonContent::class)->orderBy('order_index');
     }
 
     public function flashcards()
@@ -34,5 +34,51 @@ class Lesson extends Model
     public function quizzes()
     {
         return $this->hasMany(Quiz::class);
+    }
+
+    public function userProgress()
+    {
+        return $this->hasMany(LessonUserProgress::class);
+    }
+
+    public function notes()
+    {
+        return $this->hasMany(LessonNote::class);
+    }
+
+    public function bookmarks()
+    {
+        return $this->hasMany(LessonBookmark::class);
+    }
+
+    public function getProgressPercent($userId)
+    {
+        $totalContents = $this->contents->count();
+        if ($totalContents === 0) return 0;
+        
+        $completedContents = $this->userProgress()
+            ->where('user_id', $userId)
+            ->where('is_completed', true)
+            ->count();
+        
+        return round(($completedContents / $totalContents) * 100);
+    }
+
+    public function getCompletedCount($userId)
+    {
+        return $this->userProgress()
+            ->where('user_id', $userId)
+            ->where('is_completed', true)
+            ->count();
+    }
+
+    public function isBookmarkedByUser($userId)
+    {
+        return $this->bookmarks()->where('user_id', $userId)->exists();
+    }
+
+    public function getUserNote($userId)
+    {
+        return $this->notes()->where('user_id', $userId)->first();
     }
 }

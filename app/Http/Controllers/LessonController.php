@@ -1,29 +1,29 @@
 <?php
-// app/Http/Controllers/LessonController.php
 
 namespace App\Http\Controllers;
 
 use App\Models\Lesson;
 use App\Models\LessonContent;
+use App\Models\LessonUserProgress;
+use App\Models\LessonNote;
+use App\Models\LessonBookmark;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 
 class LessonController extends Controller
 {
     private function getCurrentUserId()
     {
-        // Priority 1: Logged in user
         if (Auth::check()) {
             return Auth::id();
         }
         
-        // Priority 2: Guest session
         if (Session::has('guest_id')) {
             return Session::get('guest_id');
         }
         
-        // Priority 3: Create new guest (should not happen due to middleware)
         $guestId = Session::getId();
         $user = \App\Models\User::create([
             'name' => 'Guest_' . substr($guestId, 0, 8),
@@ -38,8 +38,25 @@ class LessonController extends Controller
     public function index()
     {
         $userId = $this->getCurrentUserId();
-        $lessons = Lesson::where('user_id', $userId)->latest()->get();
-        return view('lessons.index', compact('lessons'));
+        $lessons = Lesson::where('user_id', $userId)
+            ->with('contents')
+            ->latest()
+            ->get();
+        
+        foreach ($lessons as $lesson) {
+            $lesson->progress_percent = $lesson->getProgressPercent($userId);
+            $lesson->is_bookmarked = $lesson->isBookmarkedByUser($userId);
+            $lesson->completed_count = $lesson->getCompletedCount($userId);
+            $lesson->total_contents = $lesson->contents->count();
+        }
+        
+        $totalLessons = $lessons->count();
+        $completedLessons = $lessons->filter(function($l) { return $l->progress_percent === 100; })->count();
+        $inProgressLessons = $lessons->filter(function($l) { return $l->progress_percent > 0 && $l->progress_percent < 100; })->count();
+        $bookmarkedCount = LessonBookmark::where('user_id', $userId)->count();
+        $overallProgress = $totalLessons > 0 ? round($lessons->sum('progress_percent') / $totalLessons) : 0;
+        
+        return view('lessons.index', compact('lessons', 'totalLessons', 'completedLessons', 'inProgressLessons', 'bookmarkedCount', 'overallProgress'));
     }
 
     public function create()
@@ -62,14 +79,33 @@ class LessonController extends Controller
             'subject' => $request->subject
         ]);
 
-        return redirect()->route('lessons.show', $lesson->id)->with('success', 'Lesson created successfully!');
+        return redirect()->route('lessons.show', $lesson->id)->with('success', 'Lesson created! Add your first content section below.');
     }
 
     public function show($id)
     {
         $userId = $this->getCurrentUserId();
         $lesson = Lesson::where('user_id', $userId)->with('contents')->findOrFail($id);
-        return view('lessons.show', compact('lesson'));
+        
+        // Get completed status for each content
+        $completedMap = LessonUserProgress::where('user_id', $userId)
+            ->where('lesson_id', $id)
+            ->where('is_completed', true)
+            ->pluck('content_id')
+            ->flip();
+        
+        foreach ($lesson->contents as $content) {
+            $content->is_completed = isset($completedMap[$content->id]);
+        }
+        
+        $totalContents = $lesson->contents->count();
+        $completedContents = count($completedMap);
+        $progressPercent = $totalContents > 0 ? round(($completedContents / $totalContents) * 100) : 0;
+        $isBookmarked = $lesson->isBookmarkedByUser($userId);
+        $userNote = $lesson->getUserNote($userId);
+        $noteContent = $userNote ? $userNote->content : '';
+        
+        return view('lessons.show', compact('lesson', 'progressPercent', 'completedContents', 'totalContents', 'isBookmarked', 'noteContent'));
     }
 
     public function update(Request $request, $id)
@@ -85,14 +121,24 @@ class LessonController extends Controller
         
         $lesson->update($request->only(['title', 'description', 'subject']));
         
-        return response()->json(['success' => true, 'lesson' => $lesson]);
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'lesson' => $lesson]);
+        }
+        
+        return back()->with('success', 'Lesson updated!');
     }
 
     public function destroy($id)
     {
         $userId = $this->getCurrentUserId();
         $lesson = Lesson::where('user_id', $userId)->findOrFail($id);
+        
+        // Delete related records
+        LessonUserProgress::where('lesson_id', $id)->delete();
+        LessonNote::where('lesson_id', $id)->delete();
+        LessonBookmark::where('lesson_id', $id)->delete();
         $lesson->delete();
+        
         return redirect()->route('lessons.index')->with('success', 'Lesson deleted!');
     }
 
@@ -126,70 +172,122 @@ class LessonController extends Controller
                 'order_index' => $request->order_index ?? 0
             ]);
 
-            return back()->with('success', 'Content added successfully!');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return back()->withErrors($e->errors())->withInput();
+            return back()->with('success', 'Content added!');
         } catch (\Exception $e) {
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
 
+    public function toggleContentComplete(Request $request, $lessonId, $contentId)
+    {
+        $userId = $this->getCurrentUserId();
+        
+        $progress = LessonUserProgress::updateOrCreate(
+            [
+                'user_id' => $userId,
+                'lesson_id' => $lessonId,
+                'content_id' => $contentId
+            ],
+            [
+                'is_completed' => $request->completed,
+                'completed_at' => $request->completed ? now() : null
+            ]
+        );
+        
+        $lesson = Lesson::find($lessonId);
+        $totalContents = $lesson->contents->count();
+        $completedContents = LessonUserProgress::where('user_id', $userId)
+            ->where('lesson_id', $lessonId)
+            ->where('is_completed', true)
+            ->count();
+        
+        $progressPercent = $totalContents > 0 ? round(($completedContents / $totalContents) * 100) : 0;
+        
+        return response()->json([
+            'success' => true,
+            'progress_percent' => $progressPercent,
+            'completed_count' => $completedContents,
+            'total_count' => $totalContents,
+            'is_complete' => $completedContents === $totalContents && $totalContents > 0
+        ]);
+    }
+
     public function toggleBookmark($id)
     {
         $userId = $this->getCurrentUserId();
-        $bookmarkKey = "bookmarks_{$userId}";
-        $bookmarks = Session::get($bookmarkKey, []);
-        $bookmarks[$id] = !($bookmarks[$id] ?? false);
-        Session::put($bookmarkKey, $bookmarks);
-        return response()->json(['bookmarked' => $bookmarks[$id]]);
-    }
-
-    public function updateProgress(Request $request, $id)
-    {
-        $userId = $this->getCurrentUserId();
-        $progressKey = "lesson_progress_{$userId}";
-        $contentCompletedKey = "content_completed_{$userId}";
         
-        $progress = Session::get($progressKey, []);
-        $contentCompleted = Session::get($contentCompletedKey, []);
-
-        if ($request->has('content_id')) {
-            $contentCompleted[$request->content_id] = (bool) $request->completed;
-            Session::put($contentCompletedKey, $contentCompleted);
-
-            $lesson = Lesson::where('user_id', $userId)->with('contents')->find($id);
-            if ($lesson) {
-                $completedCount = count(array_filter($contentCompleted, function ($key) use ($lesson) {
-                    return $lesson->contents->pluck('id')->contains($key);
-                }, ARRAY_FILTER_USE_KEY));
-                $progress[$id] = $completedCount;
-                Session::put($progressKey, $progress);
-            }
+        $bookmark = LessonBookmark::where('user_id', $userId)
+            ->where('lesson_id', $id)
+            ->first();
+        
+        if ($bookmark) {
+            $bookmark->delete();
+            $isBookmarked = false;
+        } else {
+            LessonBookmark::create([
+                'user_id' => $userId,
+                'lesson_id' => $id
+            ]);
+            $isBookmarked = true;
         }
-        return response()->json(['success' => true]);
+        
+        return response()->json(['bookmarked' => $isBookmarked]);
     }
 
     public function getNotes($id)
     {
         $userId = $this->getCurrentUserId();
-        $notes = Session::get("lesson_notes_{$userId}_{$id}", '');
-        return response()->json(['notes' => $notes]);
+        $note = LessonNote::where('user_id', $userId)
+            ->where('lesson_id', $id)
+            ->first();
+        
+        return response()->json(['notes' => $note->content ?? '']);
     }
 
     public function saveNotes(Request $request, $id)
     {
         $userId = $this->getCurrentUserId();
-        Session::put("lesson_notes_{$userId}_{$id}", $request->notes);
+        
+        LessonNote::updateOrCreate(
+            [
+                'user_id' => $userId,
+                'lesson_id' => $id
+            ],
+            [
+                'content' => $request->notes
+            ]
+        );
+        
+        return response()->json(['success' => true]);
+    }
+
+    public function saveFileNote(Request $request, $lessonId, $contentId)
+    {
+        $userId = $this->getCurrentUserId();
+        $key = "file_note_{$userId}_{$contentId}";
+        Session::put($key, $request->note);
+
         return response()->json(['success' => true]);
     }
     
-    public function markComplete(Request $request, $id)
+    public function deleteContent($lessonId, $contentId)
     {
         $userId = $this->getCurrentUserId();
-        $completedKey = "completed_lessons_{$userId}";
-        $completed = Session::get($completedKey, []);
-        $completed[$id] = $request->completed ?? true;
-        Session::put($completedKey, $completed);
-        return response()->json(['success' => true]);
+        $lesson = Lesson::where('user_id', $userId)->findOrFail($lessonId);
+        $content = LessonContent::where('lesson_id', $lessonId)->findOrFail($contentId);
+        
+        LessonUserProgress::where('content_id', $contentId)->delete();
+        $content->delete();
+        
+        // Check if it's an AJAX/fetch request
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Content deleted successfully',
+                'redirect' => route('lessons.show', $lessonId)
+            ]);
+        }
+        
+        return redirect()->route('lessons.show', $lessonId)->with('success', 'Content deleted!');
     }
 }
