@@ -21,41 +21,6 @@ class GeminiLMSService
         ]);
     }
 
-    public function generateFlashcards($content, $numCards = 10)
-    {
-        Log::info('generateFlashcards called', [
-            'content_length' => strlen($content),
-            'num_cards' => $numCards
-        ]);
-        
-        if (!$this->apiKey || $this->useMock) {
-            return $this->createFlashcardsFromContent($content, $numCards);
-        }
-
-        try {
-            $prompt = $this->buildFlashcardPrompt($content, $numCards);
-            $response = $this->callGemini($prompt);
-            
-            // Check if response indicates API error
-            if ($response && $this->isApiErrorResponse($response)) {
-                return $this->createFlashcardsFromContent($content, $numCards);
-            }
-            
-            if ($response && $this->isValidJson($response)) {
-                $decoded = json_decode($response, true);
-                if (isset($decoded['flashcards']) && count($decoded['flashcards']) > 0) {
-                    return json_encode(['flashcards' => $decoded['flashcards']]);
-                }
-            }
-            
-            return $this->createFlashcardsFromContent($content, $numCards);
-            
-        } catch (\Exception $e) {
-            Log::error('Gemini API Error: ' . $e->getMessage());
-            return $this->createFlashcardsFromContent($content, $numCards);
-        }
-    }
-    
     public function generateQuiz($content, $numQuestions = 10, $difficulty = 'medium')
     {
         Log::info('generateQuiz called', [
@@ -64,6 +29,7 @@ class GeminiLMSService
             'difficulty' => $difficulty
         ]);
         
+        // If no API key or mock mode, use fallback
         if (!$this->apiKey || $this->useMock) {
             return $this->createQuizFromContent($content, $numQuestions);
         }
@@ -72,14 +38,18 @@ class GeminiLMSService
             $prompt = $this->buildQuizPrompt($content, $numQuestions, $difficulty);
             $response = $this->callGemini($prompt);
             
-            if ($response && $this->isApiErrorResponse($response)) {
-                return $this->createQuizFromContent($content, $numQuestions);
-            }
-            
             if ($response && $this->isValidJson($response)) {
                 $decoded = json_decode($response, true);
                 if (isset($decoded['questions']) && count($decoded['questions']) > 0) {
                     return json_encode(['questions' => $decoded['questions']]);
+                }
+            }
+            
+            // If we have a response but no questions, try to extract
+            if ($response && strlen($response) > 50) {
+                $extracted = $this->extractQuestionsFromText($response);
+                if (count($extracted) > 0) {
+                    return json_encode(['questions' => $extracted]);
                 }
             }
             
@@ -91,181 +61,169 @@ class GeminiLMSService
         }
     }
     
+    private function extractQuestionsFromText($text)
+    {
+        $questions = [];
+        
+        // Try to find JSON in the response
+        if (preg_match('/\{[^{}]*"questions"\s*:\s*\[(.*)\]\s*\}/s', $text, $matches)) {
+            $jsonStr = $matches[0];
+            $decoded = json_decode($jsonStr, true);
+            if (isset($decoded['questions'])) {
+                return $decoded['questions'];
+            }
+        }
+        
+        // Try to find individual Q&A patterns
+        $pattern = '/(?:Question|Q\.?\s*(\d+)?[:\s]*)(.+?)(?:Answer|A\.?\s*[:\s]*)(.+?)(?=Question|Q\.|$)/si';
+        if (preg_match_all($pattern, $text, $matches)) {
+            foreach ($matches[2] as $i => $question) {
+                $answer = $matches[3][$i] ?? '';
+                $questions[] = [
+                    'question' => trim($question),
+                    'options' => ['True', 'False'],
+                    'correct_answer' => trim($answer),
+                    'explanation' => trim($answer)
+                ];
+            }
+        }
+        
+        return $questions;
+    }
+    
     private function createQuizFromContent($content, $numQuestions)
     {
-        Log::info('Creating quiz from content directly (API fallback)');
+        Log::info('Creating quiz from content directly (fallback mode)');
         
-        // Extract key sentences
+        // Split content into sentences
         $sentences = preg_split('/(?<=[.!?])\s+(?=[A-Z])/', $content, -1, PREG_SPLIT_NO_EMPTY);
         $questions = [];
         
-        foreach ($sentences as $index => $sentence) {
+        foreach ($sentences as $sentence) {
             $sentence = trim($sentence);
-            if (strlen($sentence) > 30 && count($questions) < $numQuestions) {
+            if (strlen($sentence) > 30 && strlen($sentence) < 300 && count($questions) < $numQuestions) {
+                // Generate 4 options based on the sentence
+                $correctAnswer = substr($sentence, 0, min(100, strlen($sentence)));
+                $options = [
+                    $correctAnswer,
+                    "This is not mentioned in the text",
+                    "A different concept entirely",
+                    "Related but incorrect"
+                ];
+                shuffle($options);
+                
                 $questions[] = [
                     'question' => $this->sentenceToQuestion($sentence),
-                    'options' => $this->generateOptions($sentence, $sentences),
-                    'correct_answer' => $this->extractKeyPhrase($sentence),
+                    'options' => $options,
+                    'correct_answer' => $correctAnswer,
                     'explanation' => $sentence
                 ];
             }
         }
         
-        // If no questions, add sample
+        // If still no questions, create from key phrases
         if (empty($questions)) {
-            $questions[] = [
-                'question' => 'What is the main topic of this document?',
-                'options' => ['Topic A', 'Topic B', 'Topic C', 'Topic D'],
-                'correct_answer' => 'Review the document for the main topic',
-                'explanation' => 'Read the document carefully to identify the main subject matter.'
-            ];
-        }
-        
-        return json_encode(['questions' => $questions]);
-    }
-    
-    private function generateOptions($correctAnswer, $allSentences)
-    {
-        $options = [$correctAnswer];
-        $keyPhrases = [];
-        
-        // Extract key phrases from other sentences
-        foreach ($allSentences as $sentence) {
-            if ($sentence !== $correctAnswer && strlen($sentence) > 10) {
-                $phrase = substr($sentence, 0, 50);
-                if (!in_array($phrase, $options)) {
-                    $keyPhrases[] = $phrase;
-                }
-            }
-        }
-        
-        // Add up to 3 distractors
-        $distractors = array_slice($keyPhrases, 0, 3);
-        $options = array_merge($options, $distractors);
-        
-        // Shuffle options
-        shuffle($options);
-        
-        return $options;
-    }
-    
-    private function extractKeyPhrase($sentence)
-    {
-        // Extract first 50 characters as key phrase
-        return substr($sentence, 0, 100);
-    }
-
-    private function createFlashcardsFromContent($content, $numCards)
-    {
-        Log::info('Creating flashcards from content directly (API fallback)');
-        
-        // Split content into sentences
-        $sentences = preg_split('/(?<=[.!?])\s+(?=[A-Z])/', $content, -1, PREG_SPLIT_NO_EMPTY);
-        $flashcards = [];
-        
-        foreach ($sentences as $sentence) {
-            $sentence = trim($sentence);
-            if (strlen($sentence) > 20 && strlen($sentence) < 300 && count($flashcards) < $numCards) {
-                $question = $this->sentenceToQuestion($sentence);
-                $flashcards[] = [
-                    'question' => $question,
-                    'answer' => $sentence
-                ];
-            }
-        }
-        
-        // If still no flashcards, extract key phrases
-        if (empty($flashcards)) {
-            preg_match_all('/([A-Z][a-z]+(?:\s+[A-Za-z]+){1,5})/', $content, $matches);
+            // Extract key phrases (words in title case or quoted)
+            preg_match_all('/([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3})/', $content, $matches);
             $keyPhrases = array_unique($matches[0]);
             
             foreach ($keyPhrases as $phrase) {
-                if (strlen($phrase) > 10 && count($flashcards) < $numCards) {
-                    $flashcards[] = [
-                        'question' => "What is {$phrase}?",
-                        'answer' => "Review the document for information about {$phrase}."
+                if (strlen($phrase) > 10 && count($questions) < $numQuestions) {
+                    $questions[] = [
+                        'question' => "What is " . $phrase . "?",
+                        'options' => ["It is a key concept", "Related to the topic", "Discussed in the text", "None of the above"],
+                        'correct_answer' => "Discussed in the text",
+                        'explanation' => "Review the document for information about " . $phrase
                     ];
                 }
             }
         }
         
-        // Add fallback message for API limit
-        $fallbackNote = "\n\n⚠️ *Note: Generated from document content (AI API temporarily unavailable)*";
+        // Ultimate fallback
+        if (empty($questions)) {
+            for ($i = 0; $i < min($numQuestions, 5); $i++) {
+                $questions[] = [
+                    'question' => 'What is the main topic discussed in this document?',
+                    'options' => ['Topic A', 'Topic B', 'Topic C', 'Topic D'],
+                    'correct_answer' => 'Topic A',
+                    'explanation' => 'Please review the document to identify the main subject.'
+                ];
+            }
+        }
         
-        return json_encode(['flashcards' => $flashcards, 'fallback_mode' => true, 'fallback_note' => $fallbackNote]);
+        return json_encode(['questions' => array_slice($questions, 0, $numQuestions)]);
     }
     
     private function sentenceToQuestion($sentence)
     {
         $sentence = trim($sentence);
-        
         // Remove common prefixes
         $sentence = preg_replace('/^(The|A|An|This|These|Those|It is|It\'s)\s+/i', '', $sentence);
-        
-        // Capitalize first letter
         $sentence = ucfirst($sentence);
         
-        // If sentence doesn't end with question mark, add one
+        // If it doesn't end with question mark, add one
         if (!str_ends_with($sentence, '?')) {
-            $sentence .= '?';
-        }
-        
-        // Add question word if needed
-        if (!preg_match('/^(What|Why|How|When|Where|Who|Which|Is|Are|Can|Does|Do)/i', $sentence)) {
-            $sentence = 'What is ' . lcfirst($sentence);
+            // If it's a statement, convert to question
+            if (preg_match('/^(.+?) (is|are|was|were|has|have|can|will|would|could|should) /i', $sentence, $matches)) {
+                $sentence = ucfirst($matches[2]) . ' ' . $matches[1] . '?';
+            } else {
+                $sentence = 'What is ' . lcfirst($sentence) . '?';
+            }
         }
         
         return $sentence;
     }
 
-    private function buildFlashcardPrompt($content, $numCards)
-    {
-        return 'Create ' . $numCards . ' flashcards from the content below.
-
-CRITICAL RULES:
-1. Questions must be CLEAR and CONCISE (max 15 words)
-2. Answers must be DIRECT from the content
-3. Use proper capitalization (LARAVEL, not IARAVEL)
-4. No extra text or punctuation
-
-Return ONLY valid JSON:
-{"flashcards": [{"question": "Clear question", "answer": "Direct answer"}]}
-
-Content:
-"""' . $content . '"""';
-    }
-    
     private function buildQuizPrompt($content, $numQuestions, $difficulty)
     {
-        return 'Create ' . $numQuestions . ' multiple-choice quiz questions from the content below. Difficulty: ' . $difficulty . '
+        return "Create " . $numQuestions . " multiple-choice quiz questions based STRICTLY on the following text. Difficulty: " . $difficulty . "
 
-Return ONLY valid JSON:
+Instructions:
+1. Each question must be based on information in the text
+2. Provide 4 options (A, B, C, D) for each question
+3. Only ONE option should be correct
+4. The correct answer must be directly from the text
+5. Return ONLY valid JSON, no other text
+
+Response format:
 {
-    "questions": [
+    \"questions\": [
         {
-            "question": "Question text",
-            "options": ["Option A", "Option B", "Option C", "Option D"],
-            "correct_answer": "Option A",
-            "explanation": "Why this is correct"
+            \"question\": \"Question text here?\",
+            \"options\": [\"Option A\", \"Option B\", \"Option C\", \"Option D\"],
+            \"correct_answer\": \"Option A\",
+            \"explanation\": \"Brief explanation from the text\"
         }
     ]
 }
 
-Content:
-"""' . $content . '"""';
+Text:
+\"\"\"$content\"\"\"";
     }
 
     private function callGemini($prompt)
     {
         if (!$this->apiKey) {
+            Log::error('No API key provided');
             return null;
         }
 
-        $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=' . $this->apiKey;
+        $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $this->apiKey;
         
+        // Correct format for Gemini API
         $data = [
             'contents' => [
-                ['parts' => [['text' => $prompt]]]
+                [
+                    'parts' => [
+                        ['text' => $prompt]
+                    ]
+                ]
+            ],
+            'generationConfig' => [
+                'temperature' => 0.7,
+                'maxOutputTokens' => 2048,
+                'topP' => 0.95,
+                'topK' => 40
             ]
         ];
         
@@ -284,64 +242,28 @@ Content:
         
         if ($curlError) {
             Log::error('CURL Error: ' . $curlError);
-            return "Connection Error: " . $curlError;
+            return null;
         }
         
         if ($httpCode == 200) {
             $result = json_decode($response, true);
             $text = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
+            Log::info('Gemini API success', ['response_length' => strlen($text)]);
             
-            if (preg_match('/\{[\s\S]*\}/', $text, $matches)) {
+            // Try to extract JSON from response
+            if (preg_match('/\{[\s\S]*"questions"[\s\S]*\}/', $text, $matches)) {
                 return $matches[0];
             }
             return $text;
         }
         
-        // Log API error
         Log::warning('Gemini API returned HTTP ' . $httpCode, ['response' => substr($response, 0, 500)]);
-        
-        // Return structured error message
-        $errorMessage = $this->getApiErrorMessage($httpCode);
-        return $errorMessage;
-    }
-    
-    private function getApiErrorMessage($httpCode)
-    {
-        switch ($httpCode) {
-            case 429:
-                return "API_RATE_LIMIT: You've reached the API request limit. Please wait a minute.";
-            case 503:
-                return "API_UNAVAILABLE: The AI service is temporarily busy. Using fallback mode.";
-            case 401:
-            case 403:
-                return "API_AUTH_ERROR: Invalid API key. Please check your configuration.";
-            default:
-                return "API_ERROR_{$httpCode}: Service unavailable. Using fallback mode.";
-        }
-    }
-    
-    private function isApiErrorResponse($response)
-    {
-        if (!$response) return true;
-        
-        $errorPatterns = [
-            'API_RATE_LIMIT',
-            'API_UNAVAILABLE',
-            'API_AUTH_ERROR',
-            'API_ERROR_',
-            'Connection Error'
-        ];
-        
-        foreach ($errorPatterns as $pattern) {
-            if (strpos($response, $pattern) !== false) {
-                return true;
-            }
-        }
-        return false;
+        return null;
     }
 
     private function isValidJson($string)
     {
+        if (!$string) return false;
         json_decode($string);
         return json_last_error() === JSON_ERROR_NONE;
     }

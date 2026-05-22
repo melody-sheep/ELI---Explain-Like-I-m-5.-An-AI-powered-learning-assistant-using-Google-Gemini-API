@@ -53,7 +53,7 @@
             background-color: var(--bg-primary);
             color: var(--text-primary);
             transition: all 0.2s ease;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Consolas', monospace, system-ui;
         }
 
         ::-webkit-scrollbar {
@@ -73,7 +73,6 @@
             font-size: 20px;
         }
         
-        /* Line clamp utility */
         .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -88,15 +87,41 @@
     </div>
 
     <script>
+        // Global theme functions
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('eli_theme', isLight ? 'light' : 'dark');
+            
+            // Update all theme icons on the page
+            document.querySelectorAll('#theme-icon, .theme-icon').forEach(icon => {
+                if (icon) icon.textContent = isLight ? 'light_mode' : 'dark_mode';
+            });
+        }
+        
+        function updateThemeIcon() {
+            const isLight = document.body.classList.contains('light-mode');
+            document.querySelectorAll('#theme-icon, .theme-icon').forEach(icon => {
+                if (icon) icon.textContent = isLight ? 'light_mode' : 'dark_mode';
+            });
+        }
+        
+        // Load saved theme
         const savedTheme = localStorage.getItem('eli_theme');
         if (savedTheme === 'light') {
             document.body.classList.add('light-mode');
         }
         
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            localStorage.setItem('eli_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
-        }
+        // Update icons on load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateThemeIcon();
+        });
+        
+        // Watch for theme changes
+        const themeObserver = new MutationObserver(function() {
+            updateThemeIcon();
+        });
+        themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     </script>
 </body>
 </html>

@@ -61,6 +61,14 @@ ELI-APP/
 │  ├─ ✅ app.php
 │  ├─ ✅ providers.php
 │  └─ ✅ cache/.gitignore
+
+└─ ✅ console/
+
+│  └─ ✅ routes/ (Laravel console commands)
+
+│  ├─ ✅ app.php
+│  ├─ ✅ providers.php
+│  └─ ✅ cache/.gitignore
 │
 ├─ ✅ config/
 │  ├─ ✅ app.php

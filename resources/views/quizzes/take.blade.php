@@ -98,8 +98,8 @@
                 <h1 style="font-size: 20px; font-weight: 700; color: var(--text-primary);">{{ $quiz->title }}</h1>
                 <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Answer all questions to see your score</p>
             </div>
-            <div id="timer-display" style="text-align: center;">
-                <div style="position: relative; width: 60px; height: 60px;">
+            <div id="timer-container" style="text-align: center;">
+                <div id="timer-display" style="position: relative; width: 60px; height: 60px; margin: 0 auto;">
                     <svg width="60" height="60">
                         <circle cx="30" cy="30" r="26" fill="none" stroke="var(--border)" stroke-width="4"/>
                         <circle id="timer-circle" cx="30" cy="30" r="26" fill="none" stroke="var(--accent-purple)" stroke-width="4" stroke-dasharray="163.36" stroke-dashoffset="0" transform="rotate(-90 30 30)"/>
@@ -109,7 +109,11 @@
                     </div>
                 </div>
                 <p style="font-size: 9px; color: var(--text-muted); margin-top: 4px;">Time Left</p>
+                <button type="button" onclick="toggleTimer()" style="margin-top: 8px; background: rgba(168, 85, 247, 0.1); border: 1px solid #a855f7; color: #a855f7; padding: 4px 12px; border-radius: 20px; font-size: 10px; cursor: pointer;">
+                    <span id="timer-toggle-text">Hide Timer</span>
+                </button>
             </div>
+
         </div>
 
         @if(session('result'))
@@ -408,9 +412,26 @@
         }
     });
     
+    let timerVisible = true;
+
+    function toggleTimer() {
+        timerVisible = !timerVisible;
+        const timerDisplay = document.getElementById('timer-display');
+        const toggleText = document.getElementById('timer-toggle-text');
+
+        if (timerVisible) {
+            if (timerDisplay) timerDisplay.style.display = 'block';
+            if (toggleText) toggleText.textContent = 'Hide Timer';
+        } else {
+            if (timerDisplay) timerDisplay.style.display = 'none';
+            if (toggleText) toggleText.textContent = 'Show Timer';
+        }
+    }
+
     // Initialize
     loadSavedProgress();
     startTimer();
+
     
     // Check for high score and create confetti
     @if(session('result'))

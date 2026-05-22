@@ -14,11 +14,16 @@ class Quiz extends Model
         'lesson_id',
         'title',
         'description',
-        'source_file'
+        'source_file',
+        'time_limit_per_question',
+        'time_spent_total',
+        'last_score',
+        'times_taken',
+        'settings'
     ];
 
     protected $casts = [
-        'options' => 'array'
+        'settings' => 'array'
     ];
 
     public function user()
@@ -35,4 +40,4 @@ class Quiz extends Model
     {
         return $this->hasMany(QuizQuestion::class);
     }
-}   
+}

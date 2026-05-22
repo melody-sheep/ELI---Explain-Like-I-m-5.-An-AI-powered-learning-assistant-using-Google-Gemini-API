@@ -202,9 +202,40 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/quizzes/{id}/take', [QuizController::class, 'take'])->name('quizzes.take');
         Route::post('/quizzes/{id}/submit', [QuizController::class, 'submit'])->name('quizzes.submit');
         Route::delete('/quizzes/{id}', [QuizController::class, 'destroy'])->name('quizzes.destroy');
-        Route::get('/quizzes/{id}/results', [QuizController::class, 'results']);
+        Route::get('/quizzes/{id}/results', [QuizController::class, 'results'])->name('quizzes.results');
         Route::patch('/quizzes/{id}/retake', [QuizController::class, 'resetForRetake'])->name('quizzes.retake');
         Route::patch('/quizzes/{id}/settings', [QuizController::class, 'updateSettings'])->name('quizzes.settings');
+
+        // Add this inside the LMS group after the other quiz routes:
+        Route::post('/quizzes/save-answer', [QuizController::class, 'saveAnswer'])->name('quizzes.save-answer');
+
+        Route::get('/test-quiz', function () {
+            $userId = app(App\Traits\GetCurrentUserId::class)->getCurrentUserId();
+
+            // Test content
+            $content = "Artificial Intelligence is the simulation of human intelligence in machines. Machine Learning helps computers learn from data. Deep Learning uses neural networks.";
+
+            $sentences = preg_split('/(?<=[.!?])\s+(?=[A-Z])/', $content, -1, PREG_SPLIT_NO_EMPTY);
+            $questions = [];
+
+            foreach ($sentences as $sentence) {
+                $sentence = trim($sentence);
+                if (strlen($sentence) > 30) {
+                    $questions[] = [
+                        'question' => 'What is ' . substr($sentence, 0, 50) . '?',
+                        'options' => [substr($sentence, 0, 80), 'Not mentioned', 'Different concept', 'None'],
+                        'correct_answer' => substr($sentence, 0, 80)
+                    ];
+                }
+            }
+
+            return response()->json([
+                'content' => $content,
+                'sentences' => $sentences,
+                'questions' => $questions,
+                'count' => count($questions)
+            ]);
+        });
     });
 });
 
