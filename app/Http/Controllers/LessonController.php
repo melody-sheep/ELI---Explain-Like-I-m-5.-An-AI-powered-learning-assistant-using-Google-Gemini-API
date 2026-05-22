@@ -1,31 +1,44 @@
 <?php
+// app/Http/Controllers/LessonController.php
 
 namespace App\Http\Controllers;
 
 use App\Models\Lesson;
 use App\Models\LessonContent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class LessonController extends Controller
 {
-    private function getUserId()
+    private function getCurrentUserId()
     {
-        $userId = Session::get('user_id');
-        if (!$userId) {
-            $user = \App\Models\User::firstOrCreate(
-                ['id' => 1],
-                ['name' => 'Guest User', 'email' => 'guest@example.com', 'password' => bcrypt('password')]
-            );
-            Session::put('user_id', $user->id);
-            return $user->id;
+        // Priority 1: Logged in user
+        if (Auth::check()) {
+            return Auth::id();
         }
-        return $userId;
+        
+        // Priority 2: Guest session
+        if (Session::has('guest_id')) {
+            return Session::get('guest_id');
+        }
+        
+        // Priority 3: Create new guest (should not happen due to middleware)
+        $guestId = Session::getId();
+        $user = \App\Models\User::create([
+            'name' => 'Guest_' . substr($guestId, 0, 8),
+            'email' => 'guest_' . $guestId . '@temp.local',
+            'password' => bcrypt(\Illuminate\Support\Str::random(40)),
+            'is_guest' => true
+        ]);
+        Session::put('guest_id', $user->id);
+        return $user->id;
     }
 
     public function index()
     {
-        $lessons = Lesson::where('user_id', $this->getUserId())->latest()->get();
+        $userId = $this->getCurrentUserId();
+        $lessons = Lesson::where('user_id', $userId)->latest()->get();
         return view('lessons.index', compact('lessons'));
     }
 
@@ -43,7 +56,7 @@ class LessonController extends Controller
         ]);
 
         $lesson = Lesson::create([
-            'user_id' => $this->getUserId(),
+            'user_id' => $this->getCurrentUserId(),
             'title' => $request->title,
             'description' => $request->description,
             'subject' => $request->subject
@@ -54,13 +67,31 @@ class LessonController extends Controller
 
     public function show($id)
     {
-        $lesson = Lesson::where('user_id', $this->getUserId())->with('contents')->findOrFail($id);
+        $userId = $this->getCurrentUserId();
+        $lesson = Lesson::where('user_id', $userId)->with('contents')->findOrFail($id);
         return view('lessons.show', compact('lesson'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $userId = $this->getCurrentUserId();
+        $lesson = Lesson::where('user_id', $userId)->findOrFail($id);
+        
+        $request->validate([
+            'title' => 'sometimes|string|max:255',
+            'description' => 'nullable|string',
+            'subject' => 'nullable|string|max:100'
+        ]);
+        
+        $lesson->update($request->only(['title', 'description', 'subject']));
+        
+        return response()->json(['success' => true, 'lesson' => $lesson]);
     }
 
     public function destroy($id)
     {
-        $lesson = Lesson::where('user_id', $this->getUserId())->findOrFail($id);
+        $userId = $this->getCurrentUserId();
+        $lesson = Lesson::where('user_id', $userId)->findOrFail($id);
         $lesson->delete();
         return redirect()->route('lessons.index')->with('success', 'Lesson deleted!');
     }
@@ -68,7 +99,6 @@ class LessonController extends Controller
     public function addContent(Request $request, $id)
     {
         try {
-            // Validate
             $request->validate([
                 'title' => 'required|string',
                 'content_type' => 'required|in:text,video,file,link',
@@ -79,7 +109,6 @@ class LessonController extends Controller
             $filePath = null;
             $contentValue = $request->content;
 
-            // Handle file upload
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
                 if ($file->isValid()) {
@@ -88,7 +117,6 @@ class LessonController extends Controller
                 }
             }
 
-            // Create content
             LessonContent::create([
                 'lesson_id' => $id,
                 'title' => $request->title,
@@ -99,7 +127,6 @@ class LessonController extends Controller
             ]);
 
             return back()->with('success', 'Content added successfully!');
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
@@ -109,46 +136,60 @@ class LessonController extends Controller
 
     public function toggleBookmark($id)
     {
-        $bookmarks = Session::get('bookmarks', []);
+        $userId = $this->getCurrentUserId();
+        $bookmarkKey = "bookmarks_{$userId}";
+        $bookmarks = Session::get($bookmarkKey, []);
         $bookmarks[$id] = !($bookmarks[$id] ?? false);
-        Session::put('bookmarks', $bookmarks);
-
+        Session::put($bookmarkKey, $bookmarks);
         return response()->json(['bookmarked' => $bookmarks[$id]]);
     }
 
     public function updateProgress(Request $request, $id)
     {
-        $progress = Session::get('lesson_progress', []);
-        $contentCompleted = Session::get('content_completed', []);
+        $userId = $this->getCurrentUserId();
+        $progressKey = "lesson_progress_{$userId}";
+        $contentCompletedKey = "content_completed_{$userId}";
+        
+        $progress = Session::get($progressKey, []);
+        $contentCompleted = Session::get($contentCompletedKey, []);
 
         if ($request->has('content_id')) {
             $contentCompleted[$request->content_id] = (bool) $request->completed;
-            Session::put('content_completed', $contentCompleted);
+            Session::put($contentCompletedKey, $contentCompleted);
 
-            // Update overall progress count
-            $lesson = Lesson::where('user_id', $this->getUserId())->with('contents')->find($id);
+            $lesson = Lesson::where('user_id', $userId)->with('contents')->find($id);
             if ($lesson) {
                 $completedCount = count(array_filter($contentCompleted, function ($key) use ($lesson) {
                     return $lesson->contents->pluck('id')->contains($key);
                 }, ARRAY_FILTER_USE_KEY));
-
                 $progress[$id] = $completedCount;
-                Session::put('lesson_progress', $progress);
+                Session::put($progressKey, $progress);
             }
         }
-
         return response()->json(['success' => true]);
     }
 
     public function getNotes($id)
     {
-        $notes = Session::get("lesson_notes.{$id}", '');
+        $userId = $this->getCurrentUserId();
+        $notes = Session::get("lesson_notes_{$userId}_{$id}", '');
         return response()->json(['notes' => $notes]);
     }
 
     public function saveNotes(Request $request, $id)
     {
-        Session::put("lesson_notes.{$id}", $request->notes);
+        $userId = $this->getCurrentUserId();
+        Session::put("lesson_notes_{$userId}_{$id}", $request->notes);
+        return response()->json(['success' => true]);
+    }
+    
+    public function markComplete(Request $request, $id)
+    {
+        $userId = $this->getCurrentUserId();
+        $completedKey = "completed_lessons_{$userId}";
+        $completed = Session::get($completedKey, []);
+        $completed[$id] = $request->completed ?? true;
+        Session::put($completedKey, $completed);
         return response()->json(['success' => true]);
     }
 }

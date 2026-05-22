@@ -26,4 +26,14 @@ class Flashcard extends Model
     {
         return $this->belongsTo(Lesson::class);
     }
+    
+    public function mastery()
+    {
+        return $this->hasOne(FlashcardMastery::class)->where('user_id', auth()->id());
+    }
+    
+    public function getMasteryLevelAttribute()
+    {
+        return $this->mastery?->mastery_level ?? 'new';
+    }
 }

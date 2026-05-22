@@ -1,14 +1,15 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\GeminiService;
 use App\Models\Conversation;
-use Illuminate\Support\Facades\Auth;
+use App\Traits\GetCurrentUserId;
+use Illuminate\Support\Facades\Session;
 
 class AIController extends Controller
 {
+    use GetCurrentUserId;
     protected $gemini;
 
     public function __construct(GeminiService $gemini)
@@ -21,12 +22,13 @@ class AIController extends Controller
         try {
             $request->validate(['question' => 'required|string']);
             $question = $request->question;
-            $sessionId = session()->getId();
+            $userId = $this->getCurrentUserId();
+            $sessionId = $userId . '_' . Session::getId();
             
             $answer = $this->gemini->askWithMemory($question, $sessionId, 'ask');
             
             Conversation::create([
-                'user_id' => Auth::id(),
+                'user_id' => $userId,
                 'session_id' => $sessionId,
                 'mode' => 'ask',
                 'user_input' => $question,
@@ -47,13 +49,14 @@ class AIController extends Controller
         try {
             $request->validate(['text' => 'required|string']);
             $text = $request->text;
-            $sessionId = session()->getId();
+            $userId = $this->getCurrentUserId();
+            $sessionId = $userId . '_' . Session::getId();
             
             $prompt = "Summarize the following text in 3-5 bullet points:\n\n" . $text;
             $summary = $this->gemini->askWithMemory($prompt, $sessionId, 'summarize');
             
             Conversation::create([
-                'user_id' => Auth::id(),
+                'user_id' => $userId,
                 'session_id' => $sessionId,
                 'mode' => 'summarize',
                 'user_input' => $text,
@@ -75,13 +78,14 @@ class AIController extends Controller
         try {
             $request->validate(['text' => 'required|string']);
             $text = $request->text;
-            $sessionId = session()->getId();
+            $userId = $this->getCurrentUserId();
+            $sessionId = $userId . '_' . Session::getId();
             
             $prompt = "Explain the following concept like I'm 5 years old. Use simple words and fun examples:\n\n" . $text;
             $explanation = $this->gemini->askWithMemory($prompt, $sessionId, 'eli5');
             
             Conversation::create([
-                'user_id' => Auth::id(),
+                'user_id' => $userId,
                 'session_id' => $sessionId,
                 'mode' => 'eli5',
                 'user_input' => $text,
@@ -102,13 +106,14 @@ class AIController extends Controller
         try {
             $request->validate(['code' => 'required|string']);
             $code = $request->code;
-            $sessionId = session()->getId();
+            $userId = $this->getCurrentUserId();
+            $sessionId = $userId . '_' . Session::getId();
             
             $prompt = "Explain the following code line by line. Tell me what each part does:\n\n" . $code;
             $explanation = $this->gemini->askWithMemory($prompt, $sessionId, 'code');
             
             Conversation::create([
-                'user_id' => Auth::id(),
+                'user_id' => $userId,
                 'session_id' => $sessionId,
                 'mode' => 'code',
                 'user_input' => $code,
@@ -127,7 +132,7 @@ class AIController extends Controller
     public function history()
     {
         try {
-            $conversations = Conversation::where('user_id', Auth::id())
+            $conversations = Conversation::where('user_id', $this->getCurrentUserId())
                 ->orderBy('created_at', 'desc')
                 ->get();
             return response()->json($conversations, 200, [], JSON_UNESCAPED_SLASHES);
@@ -141,7 +146,7 @@ class AIController extends Controller
     {
         try {
             $conversation = Conversation::where('id', $id)
-                ->where('user_id', Auth::id())
+                ->where('user_id', $this->getCurrentUserId())
                 ->firstOrFail();
             $conversation->delete();
             return response()->json(['success' => true], 200, [], JSON_UNESCAPED_SLASHES);
@@ -154,7 +159,7 @@ class AIController extends Controller
     public function clearAll()
     {
         try {
-            Conversation::where('user_id', Auth::id())->delete();
+            Conversation::where('user_id', $this->getCurrentUserId())->delete();
             return response()->json(['success' => true], 200, [], JSON_UNESCAPED_SLASHES);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);

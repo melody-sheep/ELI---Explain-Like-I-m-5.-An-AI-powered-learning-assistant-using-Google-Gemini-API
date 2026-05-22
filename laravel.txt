@@ -1,0 +1,4 @@
+Laravel is a free, open-source PHP web framework created by Taylor Otwell.
+It follows the model-view-controller (MVC) architectural pattern.
+Laravel features include Eloquent ORM, Blade templating engine, and Artisan CLI.
+Routes are defined in the routes/web.php file.

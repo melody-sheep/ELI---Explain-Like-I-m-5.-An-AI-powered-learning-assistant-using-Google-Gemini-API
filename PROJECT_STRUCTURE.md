@@ -4,48 +4,155 @@ Updated: May 22, 2026
 text
 ELI-APP/
 ├─ ✅ app/ # Main Laravel app
-│ ├─ ✅ Http/Controllers/ # Request handling
-│ │ ├─ ✅ AIController.php # 4 AI modes working (USER ISOLATION ✅)
-│ │ ├─ ✅ Controller.php # Base controller
-│ │ ├─ ✅ DemoLessonController.php # Demo lesson endpoints
-│ │ ├─ ✅ FlashcardController.php # Flashcard CRUD/AI
-│ │ ├─ ✅ LessonController.php # Lesson CRUD/AI
-│ │ └─ ✅ QuizController.php # Quiz CRUD/AI
-│ ├─ ✅ Models/ # Eloquent models
-│ │ ├─ ✅ Attachment.php # Attachment metadata
-│ │ ├─ ✅ Conversation.php # Conversation history (USER_ID ✅)
-│ │ ├─ ✅ Flashcard.php # Flashcard data (USER_ID ✅)
-│ │ ├─ ✅ Lesson.php # Lesson data (USER_ID ✅)
-│ │ ├─ ✅ LessonContent.php # Lesson body/content
-│ │ ├─ ✅ Project.php # Project entity
-│ │ ├─ ✅ Quiz.php # Quiz data (USER_ID ✅)
-│ │ ├─ ✅ QuizQuestion.php # Quiz questions
-│ │ └─ ✅ User.php # Users & relations (IS_GUEST ✅)
-│ └─ ✅ Services/ # AI/service layer
-│   ├─ ✅ DemoLessonService.php # Demo lesson generation
-│   ├─ ✅ GeminiLMSService.php # LMS-focused Gemini calls
-│   └─ ✅ GeminiService.php # Core Gemini integration
+│  ├─ ✅ Http/
+│  │  ├─ ✅ Kernel.php
+│  │  ├─ ✅ Controllers/
+│  │  │  ├─ ✅ AIController.php
+│  │  │  ├─ ✅ Controller.php
+│  │  │  ├─ ✅ DemoLessonController.php
+│  │  │  ├─ ✅ FlashcardController.php
+│  │  │  ├─ ✅ LessonController.php
+│  │  │  └─ ✅ QuizController.php
+│  │  └─ ✅ Middleware/
+│  │     ├─ ✅ Authenticate.php
+│  │     ├─ ✅ GuestMode.php
+│  │     ├─ ✅ RedirectIfAuthenticated.php
+│  │     └─ ✅ VerifyCsrfToken.php
+│  │
+│  ├─ ✅ Models/
+│  │  ├─ ✅ Attachment.php
+│  │  ├─ ✅ Conversation.php
+│  │  ├─ ✅ Flashcard.php
+│  │  ├─ ✅ FlashcardMastery.php
+│  │  ├─ ✅ Lesson.php
+│  │  ├─ ✅ LessonContent.php
+│  │  ├─ ✅ Project.php
+│  │  ├─ ✅ Quiz.php
+│  │  ├─ ✅ QuizQuestion.php
+│  │  └─ ✅ User.php
+│  │
+│  ├─ ✅ Providers/
+│  │  └─ ✅ AppServiceProvider.php
+│  │
+│  ├─ ✅ Services/
+│  │  ├─ ✅ DeepSeekService.php
+│  │  ├─ ✅ DemoLessonService.php
+│  │  ├─ ✅ GeminiLMSService.php
+│  │  ├─ ✅ GeminiService.php
+│  │  └─ ✅ TextExtractorService.php
+│  │
+│  └─ ✅ Traits/
+│     └─ ✅ GetCurrentUserId.php
 │
-├─ ✅ config/ # All configured
-├─ ✅ database/migrations/ # 14+ tables created (added is_guest)
+├─ ✅ bootstrap/
+│  ├─ ✅ app.php
+│  ├─ ✅ providers.php
+│  └─ ✅ cache/.gitignore
 │
-├─ ✅ resources/views/ # Blade UI
-│ ├─ ✅ index.blade.php # Home dashboard (Protected ✅)
-│ ├─ ✅ layouts/app.blade.php # App layout (theme)
-│ ├─ ✅ auth/ # AUTH VIEWS ✅
-│ │ ├─ ✅ login.blade.php # Login page (REDESIGNED ✅)
-│ │ ├─ ✅ register.blade.php # Register page (REDESIGNED ✅)
-│ │ ├─ ✅ forgot-password.blade.php # Forgot password (ADDED ✅)
-│ │ └─ ✅ reset-password.blade.php # Reset password (ADDED ✅)
-│ ├─ ✅ lessons/ # Lesson views
-│ ├─ ✅ flashcards/ # Flashcard views
-│ └─ ✅ quizzes/ # Quiz views
+├─ ✅ config/
+│  ├─ ✅ app.php
+│  ├─ ✅ auth.php
+│  ├─ ✅ cache.php
+│  ├─ ✅ database.php
+│  ├─ ✅ filesystems.php
+│  ├─ ✅ logging.php
+│  ├─ ✅ mail.php
+│  ├─ ✅ queue.php
+│  ├─ ✅ services.php
+│  └─ ✅ session.php
 │
-├─ ✅ routes/web.php # All routes working (Auth + Guest Mode ✅)
-├─ ✅ .env # API key configured
-├─ ✅ GitHub Repo # Backed up
-├─ ❌ APK file # Not yet generated
-└─ ✅ Auth System # COMPLETED ✅
+├─ ✅ database/
+│  ├─ ✅ factories/
+│  │  └─ ✅ UserFactory.php
+│  ├─ ✅ migrations/
+│  │  ├─ ✅ 0001_01_01_000000_create_users_table.php
+│  │  ├─ ✅ 0001_01_01_000001_create_cache_table.php
+│  │  ├─ ✅ 0001_01_01_000002_create_jobs_table.php
+│  │  ├─ ✅ 2026_05_20_041132_create_projects_table.php
+│  │  ├─ ✅ 2026_05_20_041137_create_conversations_table.php
+│  │  ├─ ✅ 2026_05_20_041141_create_attachments_table.php
+│  │  ├─ ✅ 2026_05_20_041145_add_tags_to_conversations_table.php
+│  │  ├─ ✅ 2026_05_20_082047_add_session_id_to_conversations_table.php
+│  │  ├─ ✅ 2026_05_20_124638_create_lessons_table.php
+│  │  ├─ ✅ 2026_05_20_124639_create_lesson_contents_table.php
+│  │  ├─ ✅ 2026_05_20_124640_create_flashcards_table.php
+│  │  ├─ ✅ 2026_05_20_124641_create_quizzes_table.php
+│  │  ├─ ✅ 2026_05_20_124642_create_quiz_questions_table.php
+│  │  ├─ ✅ 2026_05_21_165803_add_is_guest_to_users_table.php
+│  │  ├─ ✅ 2026_05_21_173735_add_settings_to_quizzes_table.php
+│  │  ├─ ✅ 2026_05_21_173957_add_settings_to_quizzes_table.php
+│  │  ├─ ✅ 2026_05_22_045420_add_is_guest_to_users_table.php
+│  │  └─ ✅ 2026_05_22_063655_create_flashcard_mastery_table.php
+│  └─ ✅ seeders/
+│     └─ ✅ DatabaseSeeder.php
+│
+├─ ✅ public/
+│  ├─ ✅ .htaccess
+│  ├─ ✅ favicon.ico
+│  ├─ ✅ index.php
+│  └─ ✅ robots.txt
+│
+├─ ✅ resources/
+│  ├─ ✅ css/
+│  │  └─ ✅ app.css
+│  ├─ ✅ js/
+│  │  └─ ✅ app.js
+│  └─ ✅ views/
+│     ├─ ✅ index.blade.php
+│     ├─ ✅ welcome.blade.php
+│     ├─ ✅ auth/
+│     │  ├─ ✅ forgot-password.blade.php
+│     │  ├─ ✅ guest.blade.php
+│     │  ├─ ✅ login.blade.php
+│     │  ├─ ✅ register.blade.php
+│     │  └─ ✅ reset-password.blade.php
+│     ├─ ✅ flashcards/
+│     │  ├─ ✅ deck.blade.php
+│     │  ├─ ✅ generate.blade.php
+│     │  └─ ✅ index.blade.php
+│     ├─ ✅ layouts/
+│     │  └─ ✅ app.blade.php
+│     ├─ ✅ lessons/
+│     │  ├─ ✅ create.blade.php
+│     │  ├─ ✅ demo-card.blade.php
+│     │  ├─ ✅ demo-index.blade.php
+│     │  ├─ ✅ demo-show.blade.php
+│     │  ├─ ✅ index.blade.php
+│     │  └─ ✅ show.blade.php
+│     └─ ✅ quizzes/
+│        ├─ ✅ generate.blade.php
+│        ├─ ✅ index.blade.php
+│        └─ ✅ take.blade.php
+│
+├─ ✅ routes/
+│  ├─ ✅ api.php
+│  ├─ ✅ console.php
+│  └─ ✅ web.php
+│
+├─ ✅ storage/ # (not included in tree)
+│
+├─ ✅ tests/
+│  ├─ ✅ TestCase.php
+│  ├─ ✅ Feature/
+│  │  └─ ✅ ExampleTest.php
+│  └─ ✅ Unit/
+│     └─ ✅ ExampleTest.php
+│
+├─ ✅ .editorconfig
+├─ ✅ .gitattributes
+├─ ✅ .gitignore
+├─ ✅ .npmrc
+├─ ✅ after('user_id')
+├─ ✅ artisan
+├─ ✅ composer.json
+├─ ✅ laravel.txt
+├─ ✅ package.json
+├─ ✅ postcss.config.js
+├─ ✅ PROJECT_STRUCTURE.md
+├─ ✅ README.md
+├─ ✅ tailwind.config.js
+├─ ✅ TODO.md
+└─ ✅ vite.config.js
 ✅ WHAT HAS BEEN ACCOMPLISHED (UPDATED)
 Category	Achievement	Status
 Core App	Laravel + MySQL	✅ Complete

@@ -11,16 +11,15 @@
         border-color: var(--accent-yellow);
         background-color: rgba(234, 179, 8, 0.05);
     }
-    .preview-card {
-        animation: slideUp 0.3s ease;
+    .setting-card {
+        transition: all 0.2s ease;
     }
-    @keyframes slideUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+    .setting-card:hover {
+        border-color: var(--accent-yellow);
     }
 </style>
 
-<div style="width: 280px; display: flex; flex-direction: column; background-color: var(--bg-secondary); border-right: 1px solid var(--border);">
+<div style="width: 320px; display: flex; flex-direction: column; background-color: var(--bg-secondary); border-right: 1px solid var(--border); overflow-y: auto;">
     <div style="padding: 20px; border-bottom: 1px solid var(--border);">
         <a href="{{ route('flashcards.index') }}" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
             <div style="width: 36px; height: 36px; border: 1px solid var(--border-light); display: flex; align-items: center; justify-content: center; background-color: var(--bg-primary); border-radius: 8px;">
@@ -32,13 +31,17 @@
             </div>
         </a>
     </div>
-    
+
     <div style="padding: 20px;">
-        <div style="background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%); border-radius: 12px; padding: 16px;">
-            <p style="font-size: 10px; color: var(--accent-yellow); margin-bottom: 8px;">💡 TIP</p>
-            <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">
-                Upload PDFs, Word docs, or text files. AI will analyze the content and generate smart flashcards automatically.
-            </p>
+        <div style="background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%); border-radius: 12px; padding: 20px; border: 1px solid var(--border);">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                <span class="material-symbols-outlined" style="color: var(--accent-yellow); font-size: 32px;">auto_awesome</span>
+                <div>
+                    <p style="font-size: 11px; color: var(--text-muted);">AI Generation</p>
+                    <p style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Smart Flashcards</p>
+                </div>
+            </div>
+            <p style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">Upload PDF, DOCX, or TXT files. AI will analyze content and generate smart flashcards automatically.</p>
         </div>
     </div>
 </div>
@@ -84,14 +87,14 @@
                 </div>
             </div>
 
-            <!-- Generate Options -->
-            <div style="background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+            <!-- Generation Options -->
+            <div style="background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 24px;">
                 <h3 style="font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">Generation Options</h3>
                 
-                <div style="margin-bottom: 16px;">
+                <div style="margin-bottom: 20px;">
                     <label style="display: block; font-size: 11px; font-weight: 600; margin-bottom: 8px; color: var(--text-secondary);">NUMBER OF FLASHCARDS</label>
                     <input type="range" name="num_cards" id="num-cards" min="5" max="30" value="10" step="1" style="width: 100%;">
-                    <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                    <div style="display: flex; justify-content: space-between; margin-top: 5px;">
                         <span style="font-size: 10px; color: var(--text-muted);">5</span>
                         <span id="cards-value" style="font-size: 11px; color: var(--accent-yellow);">10 cards</span>
                         <span style="font-size: 10px; color: var(--text-muted);">30</span>
@@ -108,21 +111,6 @@
                     </select>
                 </div>
             </div>
-
-            <!-- Advanced Options -->
-            <details style="margin-bottom: 24px;">
-                <summary style="cursor: pointer; color: var(--text-muted); font-size: 12px; padding: 8px;">Advanced Options</summary>
-                <div style="margin-top: 12px; padding: 16px; border: 1px solid var(--border); border-radius: 8px;">
-                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                        <input type="checkbox" name="include_examples">
-                        <span style="font-size: 12px;">Include example sentences</span>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 10px;">
-                        <input type="checkbox" name="difficulty_rating">
-                        <span style="font-size: 12px;">Add difficulty rating to each card</span>
-                    </label>
-                </div>
-            </details>
 
             <button type="submit" id="submit-btn" disabled style="width: 100%; border: none; background: linear-gradient(135deg, var(--accent-yellow), var(--accent-orange)); color: black; padding: 14px; cursor: pointer; font-size: 14px; font-weight: 600; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
                 <span class="material-symbols-outlined">auto_awesome</span>
@@ -170,18 +158,15 @@
         document.querySelector('.upload-area').style.borderColor = 'var(--border)';
     }
     
-    // Drag and drop functionality
+    // Drag and drop
     const uploadArea = document.getElementById('upload-area');
-    
     uploadArea.addEventListener('dragover', (e) => {
         e.preventDefault();
         uploadArea.classList.add('drag-over');
     });
-    
     uploadArea.addEventListener('dragleave', () => {
         uploadArea.classList.remove('drag-over');
     });
-    
     uploadArea.addEventListener('drop', (e) => {
         e.preventDefault();
         uploadArea.classList.remove('drag-over');
@@ -189,8 +174,6 @@
         if (file && file.type.match('application/pdf|application/msword|application/vnd.openxmlformats-officedocument.wordprocessingml.document|text/plain')) {
             document.getElementById('file-input').files = e.dataTransfer.files;
             previewFile(document.getElementById('file-input'));
-        } else {
-            alert('Please upload a valid file (PDF, DOC, DOCX, or TXT)');
         }
     });
     

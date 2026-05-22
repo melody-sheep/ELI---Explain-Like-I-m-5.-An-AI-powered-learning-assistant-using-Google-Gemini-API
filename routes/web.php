@@ -1,4 +1,5 @@
 <?php
+// routes/web.php - COMPLETE REPLACEMENT
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AIController;
@@ -14,12 +15,10 @@ use Illuminate\Support\Facades\Auth;
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
-    // Landing page redirects to login
     Route::get('/', function () {
         return redirect()->route('login');
     });
     
-    // Login Routes
     Route::get('/login', function () {
         return view('auth.login');
     })->name('login');
@@ -28,36 +27,46 @@ Route::middleware('guest')->group(function () {
         return view('auth.register');
     })->name('register');
     
-    // Guest Mode - Start session without account
     Route::get('/guest', function () {
-        // Create a temporary guest user if doesn't exist
-        $guest = \App\Models\User::firstOrCreate(
-            ['email' => 'guest_' . session()->getId() . '@temp.com'],
-            [
-                'name' => 'Guest User',
-                'password' => bcrypt(\Str::random(40)),
-                'is_guest' => true
-            ]
-        );
+        // Check if already logged in
+        if (Auth::check()) {
+            return redirect('/dashboard');
+        }
+        
+        // Create unique guest user for this session
+        $sessionId = session()->getId();
+        $uniqueId = substr(md5($sessionId . time()), 0, 8);
+        
+        $guest = \App\Models\User::create([
+            'name' => 'Guest_' . $uniqueId,
+            'email' => 'guest_' . $sessionId . '_' . $uniqueId . '@temp.local',
+            'password' => bcrypt(\Illuminate\Support\Str::random(40)),
+            'is_guest' => true
+        ]);
+        
         Auth::login($guest);
         session()->put('is_guest', true);
+        session()->put('guest_user_id', $guest->id);
+        
         return redirect()->route('dashboard');
     })->name('guest.mode');
     
-    // Password Reset Routes
     Route::get('/forgot-password', function () {
         return view('auth.forgot-password');
     })->name('password.request');
-
+    
     Route::post('/forgot-password', function (Illuminate\Http\Request $request) {
+        $request->validate(['email' => 'required|email']);
+        // Add actual password reset logic here
         return back()->with('status', 'Password reset link sent!');
     })->name('password.email');
-
+    
     Route::get('/reset-password/{token}', function ($token) {
         return view('auth.reset-password', ['token' => $token]);
     })->name('password.reset');
-
+    
     Route::post('/reset-password', function (Illuminate\Http\Request $request) {
+        // Add actual password reset logic here
         return redirect('/login')->with('status', 'Password reset successfully!');
     })->name('password.update');
 });
@@ -72,13 +81,23 @@ Route::post('/login', function (Illuminate\Http\Request $request) {
         'email' => ['required', 'email'],
         'password' => ['required'],
     ]);
-
+    
+    // Check if user exists first
+    $user = \App\Models\User::where('email', $credentials['email'])->first();
+    
+    if (!$user) {
+        return back()->withErrors([
+            'email' => 'No account found with this email address.',
+        ])->onlyInput('email');
+    }
+    
     if (Auth::attempt($credentials, $request->boolean('remember'))) {
         $request->session()->regenerate();
         session()->forget('is_guest');
+        session()->forget('guest_id');
         return redirect()->intended(route('dashboard'));
     }
-
+    
     return back()->withErrors([
         'email' => 'The provided credentials do not match our records.',
     ])->onlyInput('email');
@@ -90,16 +109,18 @@ Route::post('/register', function (Illuminate\Http\Request $request) {
         'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
         'password' => ['required', 'string', 'min:8', 'confirmed'],
     ]);
-
+    
     $user = \App\Models\User::create([
         'name' => $request->name,
         'email' => $request->email,
         'password' => bcrypt($request->password),
         'is_guest' => false
     ]);
-
+    
     Auth::login($user);
-
+    session()->forget('is_guest');
+    session()->forget('guest_id');
+    
     return redirect(route('dashboard'));
 })->name('register');
 
@@ -117,12 +138,10 @@ Route::post('/logout', function (Illuminate\Http\Request $request) {
 */
 Route::middleware(['auth'])->group(function () {
     
-    // Dashboard (Main Chat Page)
     Route::get('/dashboard', function () {
         return view('index');
     })->name('dashboard');
     
-    // Demo Lesson Routes
     Route::prefix('demo')->group(function () {
         Route::get('/lessons', [DemoLessonController::class, 'index'])->name('demo.lessons.index');
         Route::get('/lessons/{id}', [DemoLessonController::class, 'show'])->name('demo.lessons.show');
@@ -156,13 +175,18 @@ Route::middleware(['auth'])->group(function () {
         
         // Flashcards
         Route::get('/flashcards', [FlashcardController::class, 'index'])->name('flashcards.index');
+        
+        // Flashcard Decks
+        Route::get('/flashcards/deck/{lessonId}', [FlashcardController::class, 'deck'])->name('flashcards.deck');
+        Route::delete('/flashcards/deck/{lessonId}', [FlashcardController::class, 'deleteDeck'])->name('flashcards.deck.delete');
+
         Route::get('/flashcards/generate', [FlashcardController::class, 'generate'])->name('flashcards.generate');
         Route::post('/flashcards/generate', [FlashcardController::class, 'store'])->name('flashcards.store');
         Route::put('/flashcards/{id}', [FlashcardController::class, 'update'])->name('flashcards.update');
         Route::delete('/flashcards/{id}', [FlashcardController::class, 'destroy'])->name('flashcards.destroy');
-        Route::post('/flashcards/progress', [FlashcardController::class, 'saveProgress']);
-        Route::patch('/flashcards/{id}/mastery', [FlashcardController::class, 'updateMastery'])->name('flashcards.mastery');
-        Route::patch('/flashcards/{id}/difficulty', [FlashcardController::class, 'updateDifficulty'])->name('flashcards.difficulty');
+        // Flashcard mastery (SPAs/JS may POST mastery updates)
+        Route::post('/flashcards/{id}/mastery', [FlashcardController::class, 'updateMastery'])->name('flashcards.mastery');
+
         
         // Quizzes
         Route::get('/quizzes', [QuizController::class, 'index'])->name('quizzes.index');
@@ -172,13 +196,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/quizzes/{id}/take', [QuizController::class, 'take'])->name('quizzes.take');
         Route::post('/quizzes/{id}/submit', [QuizController::class, 'submit'])->name('quizzes.submit');
         Route::delete('/quizzes/{id}', [QuizController::class, 'destroy'])->name('quizzes.destroy');
-        Route::post('/quizzes/save-answer', [QuizController::class, 'saveAnswer']);
         Route::get('/quizzes/{id}/results', [QuizController::class, 'results']);
         Route::patch('/quizzes/{id}/retake', [QuizController::class, 'resetForRetake'])->name('quizzes.retake');
+        Route::patch('/quizzes/{id}/settings', [QuizController::class, 'updateSettings'])->name('quizzes.settings');
     });
 });
 
-// Test route (public)
 Route::get('/test', function () {
     return response()->json(['status' => 'ok', 'message' => 'Routes are working']);
 });
