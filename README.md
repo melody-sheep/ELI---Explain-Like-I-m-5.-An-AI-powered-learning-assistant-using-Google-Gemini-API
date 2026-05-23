@@ -5,13 +5,13 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.4.0-blue)
-![PHP](https://img.shields.io/badge/PHP-8.5-777BB4)
-![Laravel](https://img.shields.io/badge/Laravel-13.x-FF2D20)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1)
-![Gemini AI](https://img.shields.io/badge/Gemini-AI-4285F4)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Status](https://img.shields.io/badge/status-98%25-brightgreen)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue)](https://github.com/yourusername/eli-app)
+[![PHP](https://img.shields.io/badge/PHP-8.5-777BB4)](https://php.net)
+[![Laravel](https://img.shields.io/badge/Laravel-13.x-FF2D20)](https://laravel.com)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1)](https://mysql.com)
+[![Gemini AI](https://img.shields.io/badge/Gemini-AI-4285F4)](https://deepmind.google/technologies/gemini/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Status](https://img.shields.io/badge/status-98%25-brightgreen)]()
 
 **An innovative Learning Management System that leverages Google's Gemini AI to transform how students learn from their own documents.**
 
