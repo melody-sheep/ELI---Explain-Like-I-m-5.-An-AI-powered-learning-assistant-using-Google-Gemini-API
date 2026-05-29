@@ -1,4 +1,3 @@
-```markdown
 # 🧠 ELI - Explain Like I'm 5
 
 ## An AI-Powered Learning Management System
@@ -942,4 +941,4 @@ This project is developed for **IT323 - Application Development and Emerging Tec
 *"Making complex topics simple, one flashcard at a time."*
 
 </div>
-```
+
